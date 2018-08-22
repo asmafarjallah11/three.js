@@ -10,7 +10,9 @@
 
     // mettre l'id du script
     // le body contient seulement la div qui contient le script 
-    var mainuploadcomtainer = document.getElementById("scriptmain").parentElement;
+    var mainuploadcomtainer = document.createElement('div');
+        mainuploadcomtainer.setAttribute('id', 'scriptmain');
+        document.body.appendChild(mainuploadcomtainer);
     initupload();
     
 function move(width) {

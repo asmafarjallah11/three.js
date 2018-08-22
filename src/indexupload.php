@@ -1,5 +1,8 @@
 <?php
 $uploaddir = 'uploads/';
+if(!is_dir($uploaddir)){
+    mkdir($uploaddir);
+ }   
 
 $filename = $_FILES['upload_file']['name'];
 $fileext = explode('.',$filename);
