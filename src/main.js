@@ -1,4 +1,3 @@
- 
     var filepath;
     var extension;
     var container,scriptsdiv;
@@ -33,7 +32,7 @@ function move(width) {
         }
     }
 }
-  function initupload()
+export  function initupload()
   {   var formupload  = document.createElement( 'form' ); 
        formupload.setAttribute('id', 'formupload');
       
@@ -44,9 +43,13 @@ function move(width) {
        inputupload = document.createElement( 'input' );
        inputupload.setAttribute('id', 'fileinput');
        inputupload.setAttribute('type', 'file');
-       inputupload.setAttribute('onchange', 'prepareuploadfile()');
+    //   inputupload.setAttribute('onchange', prepareuploadfile());
        inputupload.setAttribute('class', "form-control");
        x.appendChild(inputupload);
+       //inputupload.addEventListener("change", prepareuploadfile());
+       document.getElementById("fileinput").addEventListener("change", function () {
+         prepareuploadfile();
+       });
        
        var x = document.createElement( 'div' );
        x.setAttribute('class', "form-group");
@@ -76,8 +79,7 @@ function move(width) {
       myProgress.appendChild(myBar);
         x.appendChild(myProgress);
   }
-
-  function prepareuploadfile()
+ export function prepareuploadfile()
   { 
   var file =  document.getElementById('fileinput').files[0];
   console.log("name : " + file.name);
@@ -88,7 +90,7 @@ function move(width) {
 }
     function uploadFile(file)
     {
-    var url = 'indexupload.php';
+    var url = '../node_modules/three/src/indexupload.php';
     var xhr = new XMLHttpRequest();
     var fd = new FormData();
     xhr.open("POST", url, true);
@@ -169,7 +171,7 @@ function move(width) {
             var zsize=geo.boundingBox.max.z-geo.boundingBox.min.z;
             return dimensions =  [xsize,ysize,zsize];
         }
-    function init()
+export  function init()
     {   
         container = document.createElement( 'div' );
         container.setAttribute('id', 'viewerbox');
@@ -192,8 +194,10 @@ function move(width) {
         mainuploadcomtainer.appendChild(scriptsdiv);
   
               var x = document.createElement("script");
-              x.setAttribute('src', 'build/three.js');
+              console.log(window.location.href);
+              x.setAttribute('src', '../node_modules/three/build/three.js');
               x.setAttribute('id', 'three');
+              x.setAttribute('type', 'js');
               scriptsdiv.appendChild(x);
  }
     function displayinfos(returnVal,returnDim)
