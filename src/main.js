@@ -32,7 +32,7 @@ function move(width) {
         }
     }
 }
-export  function initupload()
+export function initupload()
   {   var formupload  = document.createElement( 'form' ); 
        formupload.setAttribute('id', 'formupload');
       
@@ -171,7 +171,7 @@ export  function initupload()
             var zsize=geo.boundingBox.max.z-geo.boundingBox.min.z;
             return dimensions =  [xsize,ysize,zsize];
         }
-export  function init()
+    export  function init()
     {   
         container = document.createElement( 'div' );
         container.setAttribute('id', 'viewerbox');
