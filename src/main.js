@@ -1,4 +1,3 @@
-   var fs = require('fs');
    var filepath;
     var extension;
     var container, scriptsdiv;
@@ -14,13 +13,6 @@
     mainuploadcomtainer.setAttribute('id', 'scriptmain');
     document.body.appendChild(mainuploadcomtainer);
     initupload();
-    fs.writeFile("/tmp/test", "Hey there!", function (err) {
-      if (err) {
-        return console.log(err);
-      }
-
-      console.log("The file was saved!");
-    });
 
     function move(width) {
       var elem = document.getElementById("myBar");
