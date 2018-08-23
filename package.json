@@ -72,5 +72,8 @@
       "build/three.module.js"
     ],
     "directories": {}
+  },
+  "dependencies": {
+    "file-system": "^2.2.2"
   }
 }
