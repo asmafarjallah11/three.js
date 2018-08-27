@@ -1,7 +1,6 @@
 var pako = require('pako');
 import * as Three from 'three-full';
 
-var filepath;
 var extension;
 var container, scriptsdiv;
 var camera, scene, renderer, controls, object3d;
@@ -91,17 +90,7 @@ export function prepareuploadfile() {
   console.log("size : " + file.size);
   console.log("type : " + file.type);
   console.log("date : " + file.lastModified);
-  var reader = new FileReader();
-  reader.onload = function (event) {
-    // The file's text will be printed here
-    var filecontent = event.target.result;
-    localStorage.clear('file');
-    localStorage.setItem('file', filecontent);
-    console.log(filecontent);
-    initfbx(filecontent);
-  };
-
-  reader.readAsArrayBuffer(file);
+  loadfile(getextension(file), file);
 }
 
 function getextension(file) {
@@ -224,7 +213,9 @@ function displayinfos(returnVal, returnDim) { //console.log(returnVal);
   mainuploadcomtainer.appendChild(table);
 }
 
-function loadfile(extension, filecontent) {
+function loadfile(extension, file) {
+  var filecontent;
+  var reader = new FileReader();
 
   switch (extension.trim()) {
     case '3ds':
@@ -386,21 +377,16 @@ function loadfile(extension, filecontent) {
       }, 300);
       break;
     case "dae":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/ColladaLoader.js');
-      x.setAttribute('id', 'collada');
-      scriptsdiv.appendChild(x);
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        initCOLLADA(filecontent);
+      };
 
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/colladascene.js');
-        x.setAttribute('id', 'coll11adascene');
-        container.appendChild(x);
-      }, 300);
+      reader.readAsText(file);
       break;
     case "ctm":
       var x = document.createElement("script");
@@ -444,29 +430,15 @@ function loadfile(extension, filecontent) {
       }, 200);
       break;
     case "fbx":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/libs/inflate.min.js');
-      x.setAttribute('id', 'inflate');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/FBXLoader.js');
-      x.setAttribute('id', 'FBXLoader');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/OrbitControls.js');
-      x.setAttribute('id', 'OrbitControls');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/fbxscene.js');
-        x.setAttribute('id', 'fbxscene');
-        container.appendChild(x);
-      }, 600);
-
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        initfbx(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
 
     case "gltf":
@@ -703,7 +675,7 @@ function setElementsWithInfos(manager) {
     console.log(GetInfos());
   };
 }
-
+//  region FBX
 function initfbx(path) {
   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(100, 200, 300);
@@ -777,5 +749,54 @@ function initfbx(path) {
   renderer.gammaInput = true;
   renderer.gammaOutput = true;
   renderer.shadowMap.enabled = true;
+  container.appendChild(renderer.domElement);
+}
+
+// END FBX
+// region COLLADA
+function initCOLLADA(group3d) {
+  camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.set(8, 10, 8);
+  camera.lookAt(new Three.Vector3(0, 3, 0));
+
+  scene = new Three.Scene();
+
+  var clock = new Three.Clock();
+  // loading manager
+
+  var loadingManager = new Three.LoadingManager(function () {});
+  var loader = new Three.ColladaLoader(loadingManager);
+  var object3d = loader.parse(group3d);
+  console.log(object3d);
+  var groupscene = object3d.scene;
+  console.log(groupscene);
+  groupscene.traverse(function (object) {
+    if (object instanceof Three.Mesh) {
+      console.log(object.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
+      var volume = calc_vol_and_area(geo);
+      returnVal = volume;
+      console.log(volume);
+      var dim = calc_dimensions(geo);
+      console.log(dim);
+      returnDim = dim;
+      displayinfos(returnVal, returnDim);
+
+    };
+  });
+  var ambientLight = new Three.AmbientLight(0xcccccc, 0.4);
+  scene.add(ambientLight);
+
+  var directionalLight = new Three.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(1, 1, 0).normalize();
+  scene.add(directionalLight);
+
+  console.log(scene.userData);
+  // renderer
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
 }
