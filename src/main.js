@@ -752,7 +752,33 @@ function inittds(path) {
    const loader = new Three.TDSLoader();
    object3d = loader.parse(path);
    console.log(object3d);
+    object3d.traverse(function (child) {
+      if (child instanceof Three.Mesh) {
+        var material = new Three.MeshPhongMaterial({
+          color: 0xff5533,
+          specular: 0x111111,
+          shininess: 200
+        });
+        child.material = material;
+        console.log(child.geometry);
+        var volume = calc_vol_and_area(child.geometry);
+        returnVal = volume;
+        console.log(volume);
+        var dim = calc_dimensions(child.geometry);
+        console.log(dim);
+        returnDim = dim;
+        //AFFICHAGE
+        displayinfos(returnVal, returnDim);
 
+      }
+    });
+    scene.add(object3d);
+     renderer = new THREE.WebGLRenderer({
+       antialias: true
+     });
+     renderer.setSize(container.clientWidth, container.clientHeight);
+     container.appendChild(renderer.domElement);
+    
   }
 
 // END FBX
@@ -882,6 +908,11 @@ function initCTM(text3d) {
           renderer.setSize(container.clientWidth, container.clientHeight);
           container.appendChild(renderer.domElement);
        }
+
+
+
+
+
                 // fonction pour le calcul de volume
                 function parse_obj(s) {
                   var obj_string = s;
