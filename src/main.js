@@ -219,31 +219,16 @@ function loadfile(extension, file) {
 
   switch (extension.trim()) {
     case '3ds':
-      var x = document.createElement("script");
-      x.setAttribute('src', '../node_modules/three/src/examples/js/controls/TrackballControls.js');
-      x.setAttribute('id', 'TrackballControls');
-      x.async = true;
-      x.charset = 'utf-8';
-      document.getElementsByTagName('head')[0].appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', '../node_modules/three/src/examples/js/loaders/TDSLoader.js');
-      x.setAttribute('id', 'tdsscript');
-      x.async = true;
-      x.charset = 'utf-8';
-      scriptsdiv.appendChild(x);
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', '../node_modules/three/src/scenes/3dsscene.js');
-        x.setAttribute('id', '3dsscene');
-        x.setAttribute('type', 'js');
-        x.async = true;
-        x.charset = 'utf-8';
-        container.appendChild(x);
-        var x = document.createElement("input");
-        x.setAttribute('type', 'button');
-        x.setAttribute('onclick', 'inittds()');
-        container.appendChild(x);
-      }, 300);
+   reader.onload = function (event) {
+     // The file's text will be printed here
+     filecontent = event.target.result;
+     localStorage.clear('file');
+     localStorage.setItem('file', filecontent);
+     console.log(filecontent);
+     inittds(filecontent);
+   };
+   reader.readAsArrayBuffer(file);
+   break;
       break;
     case "3mf":
       var x = document.createElement("script");
@@ -732,6 +717,43 @@ function initfbx(path) {
   renderer.shadowMap.enabled = true;
   container.appendChild(renderer.domElement);
 }
+function inittds(path) {
+   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+   camera.position.set(100, 200, 300);
+
+   controls = new Three.OrbitControls(camera);
+   controls.target.set(0, 100, 0);
+   controls.update();
+
+   scene = new Three.Scene();
+   scene.background = new Three.Color(0xa0a0a0);
+   scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
+
+   var light = new Three.HemisphereLight(0xffffff, 0x444444);
+   light.position.set(0, 200, 0);
+   scene.add(light);
+
+   // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+   // ground
+   var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
+     color: 0x999999,
+     depthWrite: false
+   }));
+   mesh.rotation.x = -Math.PI / 2;
+   mesh.receiveShadow = true;
+   scene.add(mesh);
+
+   var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
+   grid.material.opacity = 0.2;
+   grid.material.transparent = true;
+   scene.add(grid);
+
+   // model
+   const loader = new Three.TDSLoader();
+   object3d = loader.parse(path);
+   console.log(object3d);
+
+  }
 
 // END FBX
 // region COLLADA
@@ -763,7 +785,7 @@ function initCOLLADA(group3d) {
       returnDim = dim;
       displayinfos(returnVal, returnDim);
 
-    };
+    };  
   });
   var ambientLight = new Three.AmbientLight(0xcccccc, 0.4);
   scene.add(ambientLight);
