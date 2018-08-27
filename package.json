@@ -74,6 +74,10 @@
     "directories": {}
   },
   "dependencies": {
-    "file-system": "^2.2.2"
+    "@types/three": "^0.92.17",
+    "file-system": "^2.2.2",
+    "pako": "^1.0.6",
+    "three-addons": "^1.2.0",
+    "three-full": "^8.0.0"
   }
 }
