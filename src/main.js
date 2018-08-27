@@ -4,12 +4,13 @@ import * as Three from 'three-full';
 var filepath;
 var extension;
 var container, scriptsdiv;
-var camera, scene, renderer;
+var camera, scene, renderer, controls, object3d;
 var vol_and_area;
 var dimensions;
 var scale;
 var inputupload;
-
+var returnVal;
+var returnDim;
 // mettre l'id du script
 // le body contient seulement la div qui contient le script 
 var mainuploadcomtainer = document.createElement('div');
@@ -103,26 +104,14 @@ export function prepareuploadfile() {
   reader.readAsArrayBuffer(file);
 }
 
-function uploadFile(file, filecontent) {
-  var uploadfolder = 'uploads/';
+function getextension(file) {
+  console.log(file);
   var filename = file.name;
   var res = filename.split(".");
   var fext = res[res.length - 1];
-  var fpath = uploadfolder.concat(fext);
-  fpath = fpath.concat('/');
-  fpath = fpath.concat(filename);
-  console.log(fpath);
-  filepath = fpath.trim();
-  console.log('filepath');
-  console.log(filepath);
   extension = fext;
   console.log(extension);
-
-  init();
-  setTimeout(function () {
-    loadfile(extension, filecontent);
-
-  }, 500);
+  return extension;
 }
 
 function calc_vol_and_area(geo) {
@@ -716,29 +705,24 @@ function setElementsWithInfos(manager) {
 }
 
 function initfbx(path) {
-  const camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+  camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(100, 200, 300);
 
-  console.log(new Three.OrbitControls(camera));
-  const controls = new Three.OrbitControls(camera);
+  controls = new Three.OrbitControls(camera);
   controls.target.set(0, 100, 0);
   controls.update();
 
-  const scene = new Three.Scene();
+  scene = new Three.Scene();
   scene.background = new Three.Color(0xa0a0a0);
   scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
 
-  const light = new Three.DirectionalLight(0xffffff);
-  light.position.set(0, 200, 100);
-  light.castShadow = true;
-  light.shadow.camera.top = 180;
-  light.shadow.camera.bottom = -100;
-  light.shadow.camera.left = -120;
-  light.shadow.camera.right = 120;
+  var light = new Three.HemisphereLight(0xffffff, 0x444444);
+  light.position.set(0, 200, 0);
   scene.add(light);
 
+  // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
   // ground
-  const mesh = new Three.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshPhongMaterial({
+  var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
     color: 0x999999,
     depthWrite: false
   }));
@@ -746,26 +730,52 @@ function initfbx(path) {
   mesh.receiveShadow = true;
   scene.add(mesh);
 
-  const grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
+  var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
   grid.material.opacity = 0.2;
   grid.material.transparent = true;
   scene.add(grid);
 
   // model
   const loader = new Three.FBXLoader();
-  const volume = 0;
-  const surface = 0;
+  var volume = 0;
+  var surface = 0;
   console.log(`im heeeeere fbx`);
-  var object = loader.parse(path);
-  console.log(object);
-  const renderer = new Three.WebGLRenderer({
+  object3d = loader.parse(path);
+  console.log(object3d);
+  scene.add(object3d);
+  //traversing the object
+  object3d.traverse(function (child) {
+    if (child.isSkinnedMesh) {
+      console.log(child);
+      console.log(child.geometry);
+      child.castShadow = true;
+      child.receiveShadow = true;
+
+      var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+      console.log(geo);
+      var volumeg = calc_vol_and_area(geo);
+      console.log(volumeg);
+      volume = volume + volumeg[0];
+      console.log(volume);
+      surface = surface + volumeg[1];
+      console.log(surface);
+      returnVal = [volume, surface];
+      console.log(volume);
+      var dim = calc_dimensions(geo);
+      console.log(dim);
+      returnDim = dim;
+      console.log(returnDim);
+      displayinfos(returnVal, returnDim);
+    }
+  });
+  container = document.getElementById("viewerbox");
+  renderer = new Three.WebGLRenderer({
     antialias: true
   });
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.length, window.length);
+  renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.gammaInput = true;
   renderer.gammaOutput = true;
   renderer.shadowMap.enabled = true;
-
-  document.body.appendChild(renderer.domElement);
+  container.appendChild(renderer.domElement);
 }
