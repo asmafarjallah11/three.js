@@ -6,8 +6,7 @@
 
     var returnVal;
     var returnDim;
-   
-    setElementsWithInfos(inittds());
+    inittds();
     animate();
     function inittds() {
         initscene();
@@ -18,7 +17,7 @@
         var geo=new THREE.Geometry;
         var loader = new THREE.TDSLoader( );
         loader.setPath( 'examples/models/3ds/portalgun/textures/' );
-        loader.load(filepath, function ( object ) {
+        loader.load(localStorage.getItem('file'), function (object) {
                 console.log(object);
                 console.log(object.scale);
                 object.traverse( function ( child ) {
@@ -49,7 +48,7 @@
 				} );
         finalizerenderer();
 
-        return loader.manager;
+      //  return loader.manager;
 
 
 
