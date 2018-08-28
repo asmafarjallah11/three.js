@@ -219,70 +219,40 @@ function loadfile(extension, file) {
 
   switch (extension.trim()) {
     case '3ds':
-   reader.onload = function (event) {
-     // The file's text will be printed here
-     filecontent = event.target.result;
-     localStorage.clear('file');
-     localStorage.setItem('file', filecontent);
-     console.log(filecontent);
-     inittds(filecontent);
-   };
-   reader.readAsArrayBuffer(file);
-   break;
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        inittds(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
+
     case "3mf":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/3MFLoader.js');
-      x.setAttribute('id', '3mfscript');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/OrbitControls.js');
-      x.setAttribute('id', 'OrbitControls');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/libs/jszip.min.js');
-      x.setAttribute('id', 'jszip');
-      scriptsdiv.appendChild(x);
-
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/3mfscene.js');
-        x.setAttribute('id', '3mfscene');
-        scriptsdiv.appendChild(x);
-      }, 500);
-
-
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        initthreemf(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
     case "amf":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/libs/jszip.min.js');
-      x.setAttribute('id', 'jszip');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/OrbitControls.js');
-      x.setAttribute('id', 'OrbitControls');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/AMFLoader.js');
-      x.setAttribute('id', 'amfscript');
-      scriptsdiv.appendChild(x);
-
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/amfscene.js');
-        x.setAttribute('id', 'amfscene');
-        scriptsdiv.appendChild(x);
-      }, 500);
-
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        initamf(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
+
     case "assimp":
       var x = document.createElement("script");
       x.setAttribute('src', 'examples/js/Detector.js');
@@ -374,16 +344,16 @@ function loadfile(extension, file) {
       reader.readAsText(file);
       break;
     case "ctm":
-     reader.onload = function (event) {
-       // The file's text will be printed here
-       filecontent = event.target.result;
-       localStorage.clear('file');
-       localStorage.setItem('file', filecontent);
-       console.log(filecontent);
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
         initCTM(filecontent)
-     };
-reader.readAsText(file);
-     break;
+      };
+      reader.readAsText(file);
+      break;
     case "drc":
       var x = document.createElement("script");
       x.setAttribute('src', 'examples/js/loaders/DRACOLoader.js');
@@ -528,7 +498,7 @@ reader.readAsText(file);
       };
       reader.readAsText(file);
       break;
-      case "ply":
+    case "ply":
       var x = document.createElement("script");
       x.setAttribute('src', 'examples/js/loaders/PLYLoader.js');
       x.setAttribute('id', 'PLYLoader');
@@ -609,7 +579,7 @@ reader.readAsText(file);
         container.appendChild(x);
       }, 400);
       break;
-     
+
 
     default:
       var text = "I have never heard of that fruit...";
@@ -641,6 +611,9 @@ function setElementsWithInfos(manager) {
     console.log(GetInfos());
   };
 }
+
+// region 3mf 
+
 //  region FBX
 function initfbx(path) {
   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
@@ -717,69 +690,207 @@ function initfbx(path) {
   renderer.shadowMap.enabled = true;
   container.appendChild(renderer.domElement);
 }
+
+function initamf(path) {
+  camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.set(100, 200, 300);
+
+  controls = new Three.OrbitControls(camera);
+  controls.target.set(0, 100, 0);
+  controls.update();
+
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0xa0a0a0);
+  scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
+
+  var light = new Three.HemisphereLight(0xffffff, 0x444444);
+  light.position.set(0, 200, 0);
+  scene.add(light);
+
+  // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+  // ground
+  var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
+    color: 0x999999,
+    depthWrite: false
+  }));
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
+  grid.material.opacity = 0.2;
+  grid.material.transparent = true;
+  scene.add(grid);
+
+  // model
+  const loader = new Three.AMFLoader();
+  object3d = loader.parse(path);
+  console.log(object3d);
+  object3d.traverse(function (child) {
+    if (child instanceof Three.Mesh) {
+      var material = new Three.MeshPhongMaterial({
+        color: 0xff5533,
+        specular: 0x111111,
+        shininess: 200
+      });
+      child.material = material;
+      console.log(child.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+      console.log(geo);
+      var volume = calc_vol_and_area(geo);
+      returnVal = volume;
+      var dim = calc_dimensions(geo);
+      returnDim = dim;
+      console.log(returnVal);
+      console.log(returnDim);
+      //AFFICHAGE
+      displayinfos(returnVal, returnDim);
+
+    }
+  });
+  scene.add(object3d);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+}
+
+function initthreemf(path) {
+  camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.set(100, 200, 300);
+
+  controls = new Three.OrbitControls(camera);
+  controls.target.set(0, 100, 0);
+  controls.update();
+
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0xa0a0a0);
+  scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
+
+  var light = new Three.HemisphereLight(0xffffff, 0x444444);
+  light.position.set(0, 200, 0);
+  scene.add(light);
+
+  // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+  // ground
+  var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
+    color: 0x999999,
+    depthWrite: false
+  }));
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
+  grid.material.opacity = 0.2;
+  grid.material.transparent = true;
+  scene.add(grid);
+
+  // model
+  var volume = 0;
+  var surface = 0;
+  const loader = new Three.ThreeMFLoader();
+  object3d = loader.parse(path);
+  console.log(object3d);
+  object3d.traverse(function (child) {
+    if (child instanceof Three.Mesh) {
+      var material = new Three.MeshPhongMaterial({
+        color: 0xff5533,
+        specular: 0x111111,
+        shininess: 200
+      });
+      child.material = material;
+      console.log(child.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+      console.log(geo);
+      var volumegeo = calc_vol_and_area(geo);
+      volume = volume + volumegeo[0];
+      surface = surface + volumegeo[1];
+      returnVal = [volume, surface];
+      var dim = calc_dimensions(child.geometry);
+      console.log(dim);
+      returnDim = dim;
+      console.log(returnVal);
+      console.log(returnDim);
+      //AFFICHAGE
+      displayinfos(returnVal, returnDim);
+
+    }
+  });
+  scene.add(object3d);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+}
+
 function inittds(path) {
-   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
-   camera.position.set(100, 200, 300);
+  camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.set(100, 200, 300);
 
-   controls = new Three.OrbitControls(camera);
-   controls.target.set(0, 100, 0);
-   controls.update();
+  controls = new Three.OrbitControls(camera);
+  controls.target.set(0, 100, 0);
+  controls.update();
 
-   scene = new Three.Scene();
-   scene.background = new Three.Color(0xa0a0a0);
-   scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0xa0a0a0);
+  scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
 
-   var light = new Three.HemisphereLight(0xffffff, 0x444444);
-   light.position.set(0, 200, 0);
-   scene.add(light);
+  var light = new Three.HemisphereLight(0xffffff, 0x444444);
+  light.position.set(0, 200, 0);
+  scene.add(light);
 
-   // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
-   // ground
-   var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
-     color: 0x999999,
-     depthWrite: false
-   }));
-   mesh.rotation.x = -Math.PI / 2;
-   mesh.receiveShadow = true;
-   scene.add(mesh);
+  // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+  // ground
+  var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
+    color: 0x999999,
+    depthWrite: false
+  }));
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
 
-   var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
-   grid.material.opacity = 0.2;
-   grid.material.transparent = true;
-   scene.add(grid);
+  var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
+  grid.material.opacity = 0.2;
+  grid.material.transparent = true;
+  scene.add(grid);
 
-   // model
-   const loader = new Three.TDSLoader();
-   object3d = loader.parse(path);
-   console.log(object3d);
-    object3d.traverse(function (child) {
-      if (child instanceof Three.Mesh) {
-        var material = new Three.MeshPhongMaterial({
-          color: 0xff5533,
-          specular: 0x111111,
-          shininess: 200
-        });
-        child.material = material;
-        console.log(child.geometry);
-        var volume = calc_vol_and_area(child.geometry);
-        returnVal = volume;
-        console.log(volume);
-        var dim = calc_dimensions(child.geometry);
-        console.log(dim);
-        returnDim = dim;
-        //AFFICHAGE
-        displayinfos(returnVal, returnDim);
+  // model
+  const loader = new Three.TDSLoader();
+  object3d = loader.parse(path);
+  console.log(object3d);
+  object3d.traverse(function (child) {
+    if (child instanceof Three.Mesh) {
+      var material = new Three.MeshPhongMaterial({
+        color: 0xff5533,
+        specular: 0x111111,
+        shininess: 200
+      });
+      child.material = material;
+      console.log(child.geometry);
+      var volume = calc_vol_and_area(child.geometry);
+      returnVal = volume;
+      console.log(volume);
+      var dim = calc_dimensions(child.geometry);
+      console.log(dim);
+      returnDim = dim;
+      //AFFICHAGE
+      displayinfos(returnVal, returnDim);
 
-      }
-    });
-    scene.add(object3d);
-     renderer = new THREE.WebGLRenderer({
-       antialias: true
-     });
-     renderer.setSize(container.clientWidth, container.clientHeight);
-     container.appendChild(renderer.domElement);
-    
-  }
+    }
+  });
+  scene.add(object3d);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+}
 
 // END FBX
 // region COLLADA
@@ -811,7 +922,7 @@ function initCOLLADA(group3d) {
       returnDim = dim;
       displayinfos(returnVal, returnDim);
 
-    };  
+    };
   });
   var ambientLight = new Three.AmbientLight(0xcccccc, 0.4);
   scene.add(ambientLight);
@@ -829,397 +940,389 @@ function initCOLLADA(group3d) {
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
 }
+
 function initCTM(text3d) {
-    var loader = new Three.CTMLoader();
-      camera = new Three.PerspectiveCamera(20, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 2000);
-      camera.position.z = 800;
+  var loader = new Three.CTMLoader();
+  camera = new Three.PerspectiveCamera(20, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 2000);
+  camera.position.z = 800;
 
-      scene = new Three.Scene();
-      scene.background = new Three.Color(0xf8f9fa);
-      scene.fog = new Three.Fog(0x050505, 800, 2000);
-      var ambient = new THREE.AmbientLight(0x040404);
-      scene.add(ambient);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0xf8f9fa);
+  scene.fog = new Three.Fog(0x050505, 800, 2000);
+  var ambient = new THREE.AmbientLight(0x040404);
+  scene.add(ambient);
 
-      var light = new THREE.SpotLight(0xffeedd, 1.2, 650, Math.PI / 6);
-      light.position.set(0, -100, 500);
+  var light = new THREE.SpotLight(0xffeedd, 1.2, 650, Math.PI / 6);
+  light.position.set(0, -100, 500);
 
-      light.castShadow = true;
-      light.shadow.mapWidth = 1024;
-      light.shadow.mapHeight = 1024;
-      // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+  light.castShadow = true;
+  light.shadow.mapWidth = 1024;
+  light.shadow.mapHeight = 1024;
+  // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
 
-      scene.add(light);
-      var group3d =JSON.parse(text3d);
-      console.log(group3d);
+  scene.add(light);
+  var group3d = JSON.parse(text3d);
+  console.log(group3d);
+
+}
+
+function initOBJ(text3d) {
+  camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+  camera.position.set(100, 200, 300);
+
+  controls = new Three.OrbitControls(camera);
+  controls.target.set(0, 100, 0);
+  controls.update();
+
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0xa0a0a0);
+  scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
+
+  var light = new Three.HemisphereLight(0xffffff, 0x444444);
+  light.position.set(0, 200, 0);
+  scene.add(light);
+
+  // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+  // ground
+  var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
+    color: 0x999999,
+    depthWrite: false
+  }));
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
+  grid.material.opacity = 0.2;
+  grid.material.transparent = true;
+  scene.add(grid);
+
+  //  var loader = new Three.OBJLoader();
+  var data = parse_obj(text3d);
+  console.log(data);
+  //  scene.add(text3d);
+  var geo = new Three.Geometry;
+  var data = parse_obj(text3d);
+  geo.faces = data.faces;
+  geo.vertices = data.vertices;
+
+  var volume = calc_vol_and_area(geo);
+  returnVal = volume;
+  console.log(volume);
+  var dim = calc_dimensions(geo);
+  console.log(dim);
+  returnDim = dim;
+  displayinfos(returnVal, returnDim);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+}
+
+// fonction pour le calcul de volume
+function parse_obj(s) {
+  var obj_string = s;
+  console.log(s);
+
+
+  function vector(x, y, z) {
+
+    return new THREE.Vector3(parseFloat(x), parseFloat(y), parseFloat(z));
 
   }
-  
-     function initOBJ(text3d) {
-       camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
-       camera.position.set(100, 200, 300);
 
-       controls = new Three.OrbitControls(camera);
-       controls.target.set(0, 100, 0);
-       controls.update();
+  function uv(u, v) {
 
-       scene = new Three.Scene();
-       scene.background = new Three.Color(0xa0a0a0);
-       scene.fog = new Three.Fog(0xa0a0a0, 200, 1000);
+    return new THREE.Vector2(parseFloat(u), parseFloat(v));
+  }
 
-       var light = new Three.HemisphereLight(0xffffff, 0x444444);
-       light.position.set(0, 200, 0);
-       scene.add(light);
+  function face3(a, b, c, normals) {
 
-       // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
-       // ground
-       var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
-         color: 0x999999,
-         depthWrite: false
-       }));
-       mesh.rotation.x = -Math.PI / 2;
-       mesh.receiveShadow = true;
-       scene.add(mesh);
+    return new THREE.Face3(a, b, c, normals);
+  }
 
-       var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
-       grid.material.opacity = 0.2;
-       grid.material.transparent = true;
-       scene.add(grid);
+  var object = new THREE.Object3D();
+  var geometry, material, mesh;
 
-        //  var loader = new Three.OBJLoader();
-        var data = parse_obj(text3d);
-         console.log(data);
-       //  scene.add(text3d);
-       var geo = new Three.Geometry;
-        var data = parse_obj(text3d);
-       geo.faces = data.faces;
-       geo.vertices = data.vertices;
+  function parseVertexIndex(index) {
 
-          var volume = calc_vol_and_area(geo);
-          returnVal = volume;
-          console.log(volume);
-          var dim = calc_dimensions(geo);
-          console.log(dim);
-          returnDim = dim;
-          displayinfos(returnVal, returnDim);
-          renderer = new Three.WebGLRenderer({
-            antialias: true
-          });
-          renderer.setPixelRatio(window.devicePixelRatio);
-          renderer.setSize(container.clientWidth, container.clientHeight);
-          container.appendChild(renderer.domElement);
-       }
+    index = parseInt(index);
 
+    return index >= 0 ? index - 1 : index + vertices.length;
 
+  }
 
+  function parseNormalIndex(index) {
 
+    index = parseInt(index);
 
-                // fonction pour le calcul de volume
-                function parse_obj(s) {
-                  var obj_string = s;
-                  console.log(s);
+    return index >= 0 ? index - 1 : index + normals.length;
 
+  }
 
-                  function vector(x, y, z) {
+  function parseUVIndex(index) {
 
-                    return new THREE.Vector3(parseFloat(x), parseFloat(y), parseFloat(z));
+    index = parseInt(index);
 
-                  }
+    return index >= 0 ? index - 1 : index + uvs.length;
 
-                  function uv(u, v) {
+  }
 
-                    return new THREE.Vector2(parseFloat(u), parseFloat(v));
+  function add_face(a, b, c, normals_inds) {
 
-                  }
+    //if ( normals_inds === undefined )
+    if (1 == 1) {
 
-                  function face3(a, b, c, normals) {
+      geometry.faces.push(face3(
+        vertices[parseVertexIndex(a)] - 1,
+        vertices[parseVertexIndex(b)] - 1,
+        vertices[parseVertexIndex(c)] - 1
+      ));
 
-                    return new THREE.Face3(a, b, c, normals);
+    } else {
 
-                  }
+      geometry.faces.push(face3(
+        vertices[parseVertexIndex(a)] - 1,
+        vertices[parseVertexIndex(b)] - 1,
+        vertices[parseVertexIndex(c)] - 1, [
+          normals[parseNormalIndex(normals_inds[0])].clone(),
+          normals[parseNormalIndex(normals_inds[1])].clone(),
+          normals[parseNormalIndex(normals_inds[2])].clone()
+        ]
+      ));
 
-                  var object = new THREE.Object3D();
-                  var geometry, material, mesh;
+    }
+  }
 
-                  function parseVertexIndex(index) {
+  function add_uvs(a, b, c) {
 
-                    index = parseInt(index);
+    geometry.faceVertexUvs[0].push([
+      uvs[parseUVIndex(a)].clone(),
+      uvs[parseUVIndex(b)].clone(),
+      uvs[parseUVIndex(c)].clone()
+    ]);
 
-                    return index >= 0 ? index - 1 : index + vertices.length;
+  }
 
-                  }
+  function handle_face_line(faces, uvs, normals_inds) {
 
-                  function parseNormalIndex(index) {
+    if (faces[3] === undefined) {
 
-                    index = parseInt(index);
+      add_face(faces[0], faces[1], faces[2], normals_inds);
 
-                    return index >= 0 ? index - 1 : index + normals.length;
+      if (uvs !== undefined && uvs.length > 0) {
 
-                  }
+        add_uvs(uvs[0], uvs[1], uvs[2]);
 
-                  function parseUVIndex(index) {
+      }
 
-                    index = parseInt(index);
 
-                    return index >= 0 ? index - 1 : index + uvs.length;
+    } else {
 
-                  }
+      if (normals_inds !== undefined && normals_inds.length > 0) {
 
-                  function add_face(a, b, c, normals_inds) {
+        add_face(faces[0], faces[1], faces[3], [normals_inds[0], normals_inds[1], normals_inds[3]]);
+        add_face(faces[1], faces[2], faces[3], [normals_inds[1], normals_inds[2], normals_inds[3]]);
 
-                    //if ( normals_inds === undefined )
-                    if (1 == 1) {
+      } else {
 
-                      geometry.faces.push(face3(
-                        vertices[parseVertexIndex(a)] - 1,
-                        vertices[parseVertexIndex(b)] - 1,
-                        vertices[parseVertexIndex(c)] - 1
-                      ));
+        add_face(faces[0], faces[1], faces[3]);
+        add_face(faces[1], faces[2], faces[3]);
 
-                    } else {
+      }
 
-                      geometry.faces.push(face3(
-                        vertices[parseVertexIndex(a)] - 1,
-                        vertices[parseVertexIndex(b)] - 1,
-                        vertices[parseVertexIndex(c)] - 1, [
-                          normals[parseNormalIndex(normals_inds[0])].clone(),
-                          normals[parseNormalIndex(normals_inds[1])].clone(),
-                          normals[parseNormalIndex(normals_inds[2])].clone()
-                        ]
-                      ));
+      if (uvs !== undefined && uvs.length > 0) {
 
-                    }
+        add_uvs(uvs[0], uvs[1], uvs[3]);
+        add_uvs(uvs[1], uvs[2], uvs[3]);
 
-                  }
+      }
 
-                  function add_uvs(a, b, c) {
+    }
 
-                    geometry.faceVertexUvs[0].push([
-                      uvs[parseUVIndex(a)].clone(),
-                      uvs[parseUVIndex(b)].clone(),
-                      uvs[parseUVIndex(c)].clone()
-                    ]);
+  }
 
-                  }
+  // create mesh if no objects in text
 
-                  function handle_face_line(faces, uvs, normals_inds) {
+  if (/^o /gm.test(obj_string) === false) {
 
-                    if (faces[3] === undefined) {
+    geometry = new THREE.Geometry();
+    //material = new THREE.MeshLambertMaterial();
+    //mesh = new THREE.Mesh( geometry, material );
+    //object.add( mesh );
 
-                      add_face(faces[0], faces[1], faces[2], normals_inds);
+  }
 
-                      if (uvs !== undefined && uvs.length > 0) {
+  var vertices = [];
+  var normals = [];
+  var uvs = [];
 
-                        add_uvs(uvs[0], uvs[1], uvs[2]);
+  // v float float float
 
-                      }
+  var vertex_pattern = /v( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
 
-                    } else {
+  // vn float float float
 
-                      if (normals_inds !== undefined && normals_inds.length > 0) {
+  var normal_pattern = /vn( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
 
-                        add_face(faces[0], faces[1], faces[3], [normals_inds[0], normals_inds[1], normals_inds[3]]);
-                        add_face(faces[1], faces[2], faces[3], [normals_inds[1], normals_inds[2], normals_inds[3]]);
+  // vt float float
 
-                      } else {
+  var uv_pattern = /vt( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
 
-                        add_face(faces[0], faces[1], faces[3]);
-                        add_face(faces[1], faces[2], faces[3]);
+  // f vertex vertex vertex ...
 
-                      }
+  var face_pattern1 = /f( +-?\d+)( +-?\d+)( +-?\d+)( +-?\d+)?/;
 
-                      if (uvs !== undefined && uvs.length > 0) {
+  // f vertex/uv vertex/uv vertex/uv ...
 
-                        add_uvs(uvs[0], uvs[1], uvs[3]);
-                        add_uvs(uvs[1], uvs[2], uvs[3]);
+  var face_pattern2 = /f( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))?/;
 
-                      }
+  // f vertex/uv/normal vertex/uv/normal vertex/uv/normal ...
 
-                    }
+  var face_pattern3 = /f( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))?/;
 
-                  }
+  // f vertex//normal vertex//normal vertex//normal ... 
 
-                  // create mesh if no objects in text
+  var face_pattern4 = /f( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))?/
 
-                  if (/^o /gm.test(obj_string) === false) {
+  //
 
-                    geometry = new THREE.Geometry();
-                    //material = new THREE.MeshLambertMaterial();
-                    //mesh = new THREE.Mesh( geometry, material );
-                    //object.add( mesh );
+  var lines = obj_string.split('\n');
 
-                  }
+  for (var i = 0; i < lines.length; i++) {
 
-                  var vertices = [];
-                  var normals = [];
-                  var uvs = [];
+    var line = lines[i];
+    line = line.trim();
 
-                  // v float float float
+    var result;
 
-                  var vertex_pattern = /v( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
+    if (line.length === 0 || line.charAt(0) === '#') {
 
-                  // vn float float float
+      continue;
 
-                  var normal_pattern = /vn( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
+    } else if ((result = vertex_pattern.exec(line)) !== null) {
 
-                  // vt float float
+      // ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
 
-                  var uv_pattern = /vt( +[\d|\.|\+|\-|e]+)( +[\d|\.|\+|\-|e]+)/;
+      vertices.push(
+        geometry.vertices.push(
+          vector(
+            result[1], result[2], result[3]
+          )
+        )
+      );
 
-                  // f vertex vertex vertex ...
+    } else if ((result = normal_pattern.exec(line)) !== null) {
 
-                  var face_pattern1 = /f( +-?\d+)( +-?\d+)( +-?\d+)( +-?\d+)?/;
+      // ["vn 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
 
-                  // f vertex/uv vertex/uv vertex/uv ...
+      normals.push(
+        vector(
+          result[1], result[2], result[3]
+        )
+      );
 
-                  var face_pattern2 = /f( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+))?/;
+    } else if ((result = uv_pattern.exec(line)) !== null) {
 
-                  // f vertex/uv/normal vertex/uv/normal vertex/uv/normal ...
+      // ["vt 0.1 0.2", "0.1", "0.2"]
 
-                  var face_pattern3 = /f( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))?/;
+      uvs.push(
+        uv(
+          result[1], result[2]
+        )
+      );
 
-                  // f vertex//normal vertex//normal vertex//normal ... 
+    } else if ((result = face_pattern1.exec(line)) !== null) {
 
-                  var face_pattern4 = /f( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))?/
+      // ["f 1 2 3", "1", "2", "3", undefined]
 
-                  //
+      handle_face_line(
+        [result[1], result[2], result[3], result[4]]
+      );
 
-                  var lines = obj_string.split('\n');
+    } else if ((result = face_pattern2.exec(line)) !== null) {
 
-                  for (var i = 0; i < lines.length; i++) {
+      // ["f 1/1 2/2 3/3", " 1/1", "1", "1", " 2/2", "2", "2", " 3/3", "3", "3", undefined, undefined, undefined]
 
-                    var line = lines[i];
-                    line = line.trim();
+      handle_face_line(
+        [result[2], result[5], result[8], result[11]], //faces
+        [result[3], result[6], result[9], result[12]] //uv
+      );
 
-                    var result;
+    } else if ((result = face_pattern3.exec(line)) !== null) {
 
-                    if (line.length === 0 || line.charAt(0) === '#') {
+      // ["f 1/1/1 2/2/2 3/3/3", " 1/1/1", "1", "1", "1", " 2/2/2", "2", "2", "2", " 3/3/3", "3", "3", "3", undefined, undefined, undefined, undefined]
 
-                      continue;
+      handle_face_line(
+        [result[2], result[6], result[10], result[14]], //faces
+        [result[3], result[7], result[11], result[15]], //uv
+        [result[4], result[8], result[12], result[16]] //normal
+      );
 
-                    } else if ((result = vertex_pattern.exec(line)) !== null) {
+    } else if ((result = face_pattern4.exec(line)) !== null) {
 
-                      // ["v 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
+      // ["f 1//1 2//2 3//3", " 1//1", "1", "1", " 2//2", "2", "2", " 3//3", "3", "3", undefined, undefined, undefined]
 
-                      vertices.push(
-                        geometry.vertices.push(
-                          vector(
-                            result[1], result[2], result[3]
-                          )
-                        )
-                      );
+      handle_face_line(
+        [result[2], result[5], result[8], result[11]], //faces
+        [], //uv
+        [result[3], result[6], result[9], result[12]] //normal
+      );
 
-                    } else if ((result = normal_pattern.exec(line)) !== null) {
+    } else if (/^o /.test(line)) {
 
-                      // ["vn 1.0 2.0 3.0", "1.0", "2.0", "3.0"]
+      geometry = new THREE.Geometry();
+      //material = new THREE.MeshLambertMaterial();
 
-                      normals.push(
-                        vector(
-                          result[1], result[2], result[3]
-                        )
-                      );
+      //mesh = new THREE.Mesh( geometry, material );
+      //mesh.name = line.substring( 2 ).trim();
+      //object.add( mesh );
 
-                    } else if ((result = uv_pattern.exec(line)) !== null) {
+    } else if (/^g /.test(line)) {
 
-                      // ["vt 0.1 0.2", "0.1", "0.2"]
+      // group
 
-                      uvs.push(
-                        uv(
-                          result[1], result[2]
-                        )
-                      );
+    } else if (/^usemtl /.test(line)) {
 
-                    } else if ((result = face_pattern1.exec(line)) !== null) {
+      // material
 
-                      // ["f 1 2 3", "1", "2", "3", undefined]
+      //material.name = line.substring( 7 ).trim();
 
-                      handle_face_line(
-                        [result[1], result[2], result[3], result[4]]
-                      );
+    } else if (/^mtllib /.test(line)) {
 
-                    } else if ((result = face_pattern2.exec(line)) !== null) {
+      // mtl file
 
-                      // ["f 1/1 2/2 3/3", " 1/1", "1", "1", " 2/2", "2", "2", " 3/3", "3", "3", undefined, undefined, undefined]
+    } else if (/^s /.test(line)) {
 
-                      handle_face_line(
-                        [result[2], result[5], result[8], result[11]], //faces
-                        [result[3], result[6], result[9], result[12]] //uv
-                      );
+      // smooth shading
 
-                    } else if ((result = face_pattern3.exec(line)) !== null) {
+    } else {
 
-                      // ["f 1/1/1 2/2/2 3/3/3", " 1/1/1", "1", "1", "1", " 2/2/2", "2", "2", "2", " 3/3/3", "3", "3", "3", undefined, undefined, undefined, undefined]
+      // console.log( "THREE.OBJLoader: Unhandled line " + line );
 
-                      handle_face_line(
-                        [result[2], result[6], result[10], result[14]], //faces
-                        [result[3], result[7], result[11], result[15]], //uv
-                        [result[4], result[8], result[12], result[16]] //normal
-                      );
+    }
 
-                    } else if ((result = face_pattern4.exec(line)) !== null) {
+  }
 
-                      // ["f 1//1 2//2 3//3", " 1//1", "1", "1", " 2//2", "2", "2", " 3//3", "3", "3", undefined, undefined, undefined]
+  var children = object.children;
 
-                      handle_face_line(
-                        [result[2], result[5], result[8], result[11]], //faces
-                        [], //uv
-                        [result[3], result[6], result[9], result[12]] //normal
-                      );
+  for (var i = 0, l = children.length; i < l; i++) {
 
-                    } else if (/^o /.test(line)) {
+    var geometry = children[i].geometry;
 
-                      geometry = new THREE.Geometry();
-                      //material = new THREE.MeshLambertMaterial();
+    //geometry.computeCentroids();
+    //geometry.computeFaceNormals();
+    //geometry.computeBoundingSphere();
 
-                      //mesh = new THREE.Mesh( geometry, material );
-                      //mesh.name = line.substring( 2 ).trim();
-                      //object.add( mesh );
+  }
 
-                    } else if (/^g /.test(line)) {
+  //return object;
 
-                      // group
-
-                    } else if (/^usemtl /.test(line)) {
-
-                      // material
-
-                      //material.name = line.substring( 7 ).trim();
-
-                    } else if (/^mtllib /.test(line)) {
-
-                      // mtl file
-
-                    } else if (/^s /.test(line)) {
-
-                      // smooth shading
-
-                    } else {
-
-                      // console.log( "THREE.OBJLoader: Unhandled line " + line );
-
-                    }
-
-                  }
-
-                  var children = object.children;
-
-                  for (var i = 0, l = children.length; i < l; i++) {
-
-                    var geometry = children[i].geometry;
-
-                    //geometry.computeCentroids();
-                    //geometry.computeFaceNormals();
-                    //geometry.computeBoundingSphere();
-
-                  }
-
-                  //return object;
-
-                  return ({
-                    vertices: geometry.vertices,
-                    faces: geometry.faces,
-                    colors: false
-                  });
-                }
-
-
-
+  return ({
+    vertices: geometry.vertices,
+    faces: geometry.faces,
+    colors: false
+  });
+}

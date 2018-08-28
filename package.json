@@ -60,6 +60,7 @@
     "qunit": "^2.6.1",
     "rollup": "^0.63.5",
     "rollup-watch": "^4.3.1",
+    "typescript": "^3.0.1",
     "uglify-js": "^3.3.28"
   },
   "jspm": {
@@ -74,11 +75,13 @@
     "directories": {}
   },
   "dependencies": {
-    "@types/three": "^0.92.17",
+    "@types/jszip": "3.1.4",
+    "@types/three": "0.92.17",
     "file-system": "^2.2.2",
-    "jszip": "^3.1.5",
-    "pako": "^1.0.6",
-    "three-addons": "^1.2.0",
-    "three-full": "^8.0.0"
+    "jszip": "2.6.1",
+    "pako": "1.0.6",
+    "stream": "0.0.2",
+    "three-addons": "1.2.0",
+    "three-full": "git+ssh://git://github.com/asmafarjallah11/three-full.git"
   }
 }
