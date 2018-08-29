@@ -10,6 +10,7 @@ var scale;
 var inputupload;
 var returnVal;
 var returnDim;
+var ModelToReturn;
 // mettre l'id du script
 // le body contient seulement la div qui contient le script 
 var mainuploadcomtainer = document.createElement('div');
@@ -373,7 +374,7 @@ function loadfile(extension, file) {
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
         console.log(filecontent);
-        initfbx(filecontent);
+       ModelToReturn = initfbx(filecontent);
       };
       reader.readAsArrayBuffer(file);
       break;
@@ -587,8 +588,8 @@ function loadfile(extension, file) {
   }
 }
 
-function GetInfos() {
-  return [returnVal, returnDim];
+export function GetInfos() {
+  return [ModelToReturn,returnVal, returnDim];
 }
 
 function getScaledInfo() {
@@ -679,16 +680,7 @@ function initfbx(path) {
       displayinfos(returnVal, returnDim);
     }
   });
-  container = document.getElementById("viewerbox");
-  renderer = new Three.WebGLRenderer({
-    antialias: true
-  });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.gammaInput = true;
-  renderer.gammaOutput = true;
-  renderer.shadowMap.enabled = true;
-  container.appendChild(renderer.domElement);
+return object3d;
 }
 
 function initamf(path) {
