@@ -13,10 +13,7 @@ var returnDim;
 var ModelToReturn;
 // mettre l'id du script
 // le body contient seulement la div qui contient le script 
-var mainuploadcomtainer = document.createElement('div');
-mainuploadcomtainer.setAttribute('id', 'scriptmain');
-document.body.appendChild(mainuploadcomtainer);
-initupload();
+var mainuploadcomtainer = document.getElementById('scriptmain');
 
 function move(width) {
   var elem = document.getElementById("myBar");
@@ -148,9 +145,14 @@ function calc_dimensions(geo) {
   return dimensions = [xsize, ysize, zsize];
 }
 export function init() {
+  if (mainuploadcomtainer == null || mainuploadcomtainer == undefined)
+    mainuploadcomtainer = document.getElementById('scriptmain');
   container = document.createElement('div');
   container.setAttribute('id', 'viewerbox');
   mainuploadcomtainer.appendChild(container);
+
+  initupload();
+
   var viewer = document.getElementById("viewerbox");
 
   viewer.style.width = "800px";
@@ -374,7 +376,7 @@ function loadfile(extension, file) {
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
         console.log(filecontent);
-       ModelToReturn = initfbx(filecontent);
+        ModelToReturn = initfbx(filecontent);
       };
       reader.readAsArrayBuffer(file);
       break;
@@ -589,7 +591,7 @@ function loadfile(extension, file) {
 }
 
 export function GetInfos() {
-  return [ModelToReturn,returnVal, returnDim];
+  return [ModelToReturn, returnVal, returnDim];
 }
 
 function getScaledInfo() {
@@ -680,7 +682,12 @@ function initfbx(path) {
       displayinfos(returnVal, returnDim);
     }
   });
-return object3d;
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  return object3d;
 }
 
 function initamf(path) {
