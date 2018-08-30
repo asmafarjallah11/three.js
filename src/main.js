@@ -241,7 +241,7 @@ function loadfile(extension, file) {
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
         console.log(filecontent);
-        initthreemf(filecontent);
+         ModelToReturn = initthreemf(filecontent);
       };
       reader.readAsArrayBuffer(file);
       break;
@@ -673,7 +673,7 @@ function initstl(filecontent)
   var mesh = new Three.Mesh(geometry, material);
 
   mesh.position.set(0,0,0);
-  mesh.rotation.set(0, -Math.PI / 2, 0);
+  mesh.rotation.set(0,Math.PI / 2, 0);
   mesh.scale.set(0.5,0.5,0.5);
 
   mesh.castShadow = true;
@@ -820,12 +820,7 @@ var posZ = 6;
   console.log(object3d);
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
-      var material = new Three.MeshPhongMaterial({
-        color: 0xff5533,
-        specular: 0x111111,
-        shininess: 200
-      });
-      child.material = material;
+      
       console.log(child.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
       console.log(geo);
@@ -846,10 +841,20 @@ var posZ = 6;
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
+   object3d.scale.set(1, 1, 1);
+   object3d.position.set(0, 0, 0);
+   object3d.rotation.set(-Math.PI / 2, -Math.PI / 2, 0);
   return object3d;
 }
 
 function initthreemf(path) {
+  var fov = 45;
+  var near = 1;
+  var far = 500;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 6;
+  setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(100, 200, 300);
 
@@ -917,6 +922,11 @@ function initthreemf(path) {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
+     object3d.scale.set(0.1, 0.1, 0.1);
+    
+     object3d.position.set(-5, 0, 0);
+     object3d.rotation.set(-Math.PI / 2,0, 0);
+     return object3d;
 
 }
 
@@ -989,7 +999,10 @@ function inittds(path) {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
+  object3d.scale.set(1, 1, 1);
+  object3d.position.set(0, 0, 0);
   return object3d;
+
 
 }
 
@@ -1022,6 +1035,8 @@ function initCOLLADA(group3d) {
   console.log(groupscene);
   groupscene.traverse(function (object) {
     if (object instanceof Three.Mesh) {
+      
+       console.log(object);
       console.log(object.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
       var volume = calc_vol_and_area(geo);
@@ -1050,6 +1065,8 @@ function initCOLLADA(group3d) {
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
   console.log(groupscene);
+  groupscene.scale.set(1,1,1);
+  groupscene.position.set(0, 0, 0);
   return groupscene;
 }
 
