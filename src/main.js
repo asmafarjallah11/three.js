@@ -503,20 +503,15 @@ function loadfile(extension, file) {
       reader.readAsText(file);
       break;
     case "ply":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/PLYLoader.js');
-      x.setAttribute('id', 'PLYLoader');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/plyscene.js');
-        x.setAttribute('id', 'plyscene');
-        container.appendChild(x);
-      }, 300);
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initPLY(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
     case "prwm":
       var x = document.createElement("script");
@@ -1159,7 +1154,66 @@ camera.position.z = 250;
   container.appendChild(renderer.domElement);
   return groupobj;
 }
+function initPLY(text3d) {
+  var fov = 60;
+  var near = 0.1;
+  var far = 10;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 2;
+    setcamera(fov, near, far, posX, posY, posZ);
+    camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
+    camera.position.z = 250;
+    CameraToReturn = camera;
+    scene = new Three.Scene();
+    scene.background = new Three.Color(0x72645b);
+    scene.fog = new Three.Fog(0x72645b, 2, 15);
+    
+    var plane = new Three.Mesh(
+      new Three.PlaneBufferGeometry(40, 40),
+      new Three.MeshPhongMaterial({
+        color: 0x999999,
+        specular: 0x101010
+      })
+    );
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -0.5;
+    scene.add(plane);
 
+    plane.receiveShadow = true;
+    	var loader = new Three.PLYLoader();
+      var plybuffergeometry = loader.parse(text3d);
+      var material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
+      var mesh = new Three.Mesh(plybuffergeometry, material);
+      
+      mesh.position.x = -0.2;
+      mesh.position.y = -0.02;
+      mesh.position.z = -0.2;
+      mesh.scale.multiplyScalar(0.002);
+
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+       var geo = new Three.Geometry().fromBufferGeometry(plybuffergeometry);
+       console.log(geo);
+       var volume = calc_vol_and_area(geo);
+       returnVal = volume;
+       console.log(volume);
+       var dim = calc_dimensions(geo);
+       console.log(dim);
+       returnDim = dim;
+       displayinfos(returnVal, returnDim);
+        renderer = new Three.WebGLRenderer({
+          antialias: true
+        });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+       return mesh;
+ }
 // fonction pour le calcul de volume
 function parse_obj(s) {
   var obj_string = s;
