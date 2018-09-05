@@ -33,7 +33,7 @@ var returnVal;
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x72645b );
-				scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
+				scene.fog = new THREE.color( 0x72645b, 2, 15 );
 
 
 				// Ground
