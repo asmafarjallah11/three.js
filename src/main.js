@@ -12,29 +12,9 @@ var returnVal;
 var returnDim;
 var ModelToReturn;
 var CameraToReturn;
-// mettre l'id du script
-// le body contient seulement la div qui contient le script 
+ 
 var mainuploadcomtainer = document.getElementById('scriptmain');
 
-function move(width) {
-  var elem = document.getElementById("myBar");
-  var progress = document.getElementById("myProgress");
-  progress.style.display = "block";
-  console.log(width);
-  // var width = 10;
-  var id = setInterval(frame, 10);
-
-  function frame() {
-    if (width >= 100) {
-      clearInterval(id);
-      elem.remove();
-      progress.remove();
-    } else {
-      elem.style.width = width + '%';
-      // elem.innerHTML = width * 1 + '%';
-    }
-  }
-}
 export function initupload() {
   localStorage.clear('file');
   var formupload = document.createElement('form');
@@ -177,7 +157,7 @@ export function init() {
   scriptsdiv.appendChild(x);
 }
 
-function displayinfos(returnVal, returnDim) { //console.log(returnVal);
+function displayinfos(returnVal, returnDim) { 
   var table = document.createElement('table');
   table.setAttribute('id', 'tabinfo');
   var tr = table.appendChild(document.createElement('tr'));
@@ -320,20 +300,16 @@ function loadfile(extension, file) {
       }, 300);
       break;
     case "babylon":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/BabylonLoader.js');
-      x.setAttribute('id', 'BabylonLoader');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/TrackballControls.js');
-      x.setAttribute('id', 'TrackballControls');
-      scriptsdiv.appendChild(x);
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/babylonscene.js');
-        x.setAttribute('id', 'babylonscene');
-        scriptsdiv.appendChild(x);
-      }, 300);
+       reader.onload = function (event) {
+         // The file's text will be printed here
+         filecontent = event.target.result;
+         localStorage.clear('file');
+         localStorage.setItem('file', filecontent);
+         console.log(filecontent);
+         ModelToReturn = initBABYLON(filecontent);
+       };
+
+       reader.readAsText(file);
       break;
     case "dae":
       reader.onload = function (event) {
@@ -514,16 +490,15 @@ function loadfile(extension, file) {
       reader.readAsArrayBuffer(file);
       break;
     case "prwm":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/PRWMLoader.js');
-      x.setAttribute('id', 'PRWMLoader');
-      scriptsdiv.appendChild(x);
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/prwmscene.js');
-        x.setAttribute('id', 'prwmscene');
-        container.appendChild(x);
-      }, 300);
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initprwm(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
     case "STL":
       reader.onload = function (event) {
@@ -548,26 +523,17 @@ function loadfile(extension, file) {
      reader.readAsArrayBuffer(file);
      break;
     case "wrl":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/OrbitControls.js');
-      x.setAttribute('id', 'OrbitControls');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/VRMLLoader.js');
-      x.setAttribute('id', 'VRMLLoader');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
+        reader.onload = function (event) {
+          // The file's text will be printed here
+          filecontent = event.target.result;
+          localStorage.clear('file');
+          localStorage.setItem('file', filecontent);
+          console.log(filecontent);
+          ModelToReturn = initvrml(filecontent);
+        };
+        reader.readAsText(file);
+        break;
 
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/vrmlscene.js');
-        x.setAttribute('id', 'vrmlscene');
-        container.appendChild(x);
-      }, 400);
-      break;
 
 
     default:
@@ -592,18 +558,6 @@ function setScale(pScale) {
   scale = pScale;
 }
 
-function setElementsWithInfos(manager) {
-
-  manager.onLoad = function () {
-    console.log('Loading complete!');
-    displayinfos(returnVal, returnDim);
-    console.log(GetInfos());
-  };
-}
-
-// region 3mf 
-
-// region FBX
 function setcamera(fov, near, far, posX, posY, posZ) {
 
   camera = new Three.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, near, far);
@@ -615,6 +569,60 @@ function setcamera(fov, near, far, posX, posY, posZ) {
   localStorage.setItem('posY', posY);
   localStorage.setItem('posZ', posZ);
 }
+function initBABYLON(filecontent) 
+{
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  camera.position.set(3, 0.15, 3);
+  console.log(JSON.parse(filecontent));
+   scene = new Three.Scene();
+   scene.background = new Three.Color(0x72645b);
+   scene.fog = new Three.Fog(0x72645b, 2, 15);
+
+  var loader = new Three.BabylonLoader();
+  var scenebabylon = loader.parse(JSON.parse(filecontent));
+  console.log(scenebabylon);
+  scenebabylon.traverse(function (object) {
+
+    if (object instanceof Three.Mesh) {
+      console.log(object)
+
+      object.material = new Three.MeshPhongMaterial({
+        color: Math.random() * 0xffffff
+      });
+
+      console.log(object.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
+      var volume = calc_vol_and_area(geo);
+      returnVal = volume;
+
+      var dim = calc_dimensions(geo);
+      console.log(dim);
+      returnDim = dim;
+
+    }
+
+  });
+
+  scene.add(scenebabylon);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  displayinfos(returnVal, returnDim);
+  return scenebabylon;
+
+ 
+}
+
+
 function initstl(filecontent)
 {
   var fov = 60;
@@ -632,10 +640,7 @@ function initstl(filecontent)
   scene = new Three.Scene();
   scene.background = new Three.Color(0x72645b);
   scene.fog = new Three.Fog(0x72645b, 2, 15);
-  
-
-
-  // Ground
+   // Ground
 
   var plane = new Three.Mesh(
     new Three.PlaneBufferGeometry(40, 40),
@@ -1213,6 +1218,100 @@ function initPLY(text3d) {
         renderer.setSize(container.clientWidth, container.clientHeight);
         container.appendChild(renderer.domElement);
        return mesh;
+ }
+ function initprwm (filecontent)
+ {
+    var fov = 60;
+    var near = 0.1;
+    var far = 10;
+    var posX = 0;
+    var posY = 0;
+    var posZ = 2;
+    setcamera(fov, near, far, posX, posY, posZ);
+    camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
+    camera.position.z = 250;
+    CameraToReturn = camera;
+    scene = new Three.Scene();
+    scene.background = new Three.Color(0x72645b);
+    scene.fog = new Three.Fog(0x72645b, 2, 15);
+    var loader = new Three.PRWMLoader();
+    var geometry = loader.parse(filecontent);
+    console.log(geometry);
+     var material = new Three.MeshStandardMaterial({
+       color: 0x0055ff,
+       flatShading: true
+     });
+     var mesh = new Three.Mesh(geometry, material);
+     var geo = new Three.Geometry().fromBufferGeometry(geometry);
+      var volume = calc_vol_and_area(geo);
+      console.log(volume);
+      returnVal = volume;
+      var dim = calc_dimensions(geo);
+      console.log(dim);
+      returnDim = dim;
+       displayinfos(returnVal, returnDim);
+       renderer = new Three.WebGLRenderer({
+         antialias: true
+       });
+       renderer.setPixelRatio(window.devicePixelRatio);
+       renderer.setSize(container.clientWidth, container.clientHeight);
+       container.appendChild(renderer.domElement);
+     return mesh;
+
+}
+ function initvrml(filecontent)
+ {
+  var fov = 60;
+  var near = 0.1;
+  var far = 10;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 2;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
+  camera.position.z = 250;
+  CameraToReturn = camera;
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+  scene.fog = new Three.Fog(0x72645b, 2, 15);
+    
+    const loader = new Three.VRMLLoader();
+    object3d = loader.parse(filecontent);
+    console.log(object3d);
+    object3d.traverse(function (child) {
+      if (child instanceof Three.Mesh) {
+        var material = new Three.MeshPhongMaterial({
+          color: 0xff5533,
+          specular: 0x111111,
+          shininess: 200
+        });
+        child.material = material;
+        console.log(child.geometry);
+          var geometry = new Three.Geometry().fromBufferGeometry(child.geometry);
+        var volume = calc_vol_and_area(geometry);
+        returnVal = volume;
+        console.log(volume);
+        var dim = calc_dimensions(child.geometry);
+        console.log(dim);
+        returnDim = dim;
+        //AFFICHAGE
+        displayinfos(returnVal, returnDim);
+
+      }
+    });
+    scene.add(object3d);
+    renderer = new Three.WebGLRenderer({
+      antialias: true
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+    object3d.scale.set(1, 1, 1);
+    object3d.position.set(0, 0, 0);
+    return object3d;
+ 
+    
+
+
  }
 // fonction pour le calcul de volume
 function parse_obj(s) {
