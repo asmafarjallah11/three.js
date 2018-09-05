@@ -26,9 +26,7 @@
 
 			function init() {
 
-				
-
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+			    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
 				camera.position.z = 25;
 
 				// scene
@@ -42,9 +40,7 @@
 				var directionalLight = new THREE.DirectionalLight( 0x887766 );
 				directionalLight.position.set( -1, 1, 1 ).normalize();
 				scene.add( directionalLight );
-
-				//
-                                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer = new THREE.WebGLRenderer( { antialias: true } );
                                 renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( container.clientWidth, container.clientHeight );
                                 container.appendChild( renderer.domElement );

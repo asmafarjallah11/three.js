@@ -279,25 +279,16 @@ function loadfile(extension, file) {
       break;
 
     case "awd":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/AWDLoader.js');
-      x.setAttribute('id', 'AWDLoader');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/OrbitControls.js');
-      x.setAttribute('id', 'OrbitControls');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
+       reader.onload = function (event) {
 
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/awdscene.js');
-        x.setAttribute('id', 'awdscene');
-        scriptsdiv.appendChild(x);
-      }, 300);
+         filecontent = event.target.result;
+         localStorage.clear('file');
+         localStorage.setItem('file', filecontent);
+         console.log(filecontent);
+         ModelToReturn = initAWD(filecontent);
+       };
+
+       reader.readAsArrayBuffer(file);
       break;
     case "babylon":
        reader.onload = function (event) {
@@ -393,48 +384,14 @@ reader.onload = function (event) {
 reader.readAsArrayBuffer(file);
       break;
     case "pmd":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/libs/mmdparser.min.js');
-      x.setAttribute('id', 'mmdparser');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/libs/ammo.js');
-      x.setAttribute('id', 'ammo');
-      scriptsdiv.appendChild(x);
-
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/TGALoader.js');
-      x.setAttribute('id', 'TGALoader');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/MMDLoader.js');
-      x.setAttribute('id', 'MMDLoader');
-      scriptsdiv.appendChild(x);
-
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/effects/OutlineEffect.js');
-      x.setAttribute('id', 'OutlineEffect');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/animation/CCDIKSolver.js');
-      x.setAttribute('id', 'CCDIKSolver');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/animation/MMDPhysics.js');
-      x.setAttribute('id', 'MMDPhysics');
-      scriptsdiv.appendChild(x);
-
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/pmdscene.js');
-        x.setAttribute('id', 'pmdscene');
-        container.appendChild(x);
-      }, 900);
+    reader.onload = function (event) {
+      filecontent = event.target.result;
+      localStorage.clear('file');
+      localStorage.setItem('file', filecontent);
+      console.log(filecontent);
+      ModelToReturn = initPMD(filecontent);
+    };
+    reader.readAsText(file);
       break;
 
     case "obj":
@@ -542,6 +499,54 @@ function initgltf(filecontent)
 var parser = new GLTFParser(json);
 
 }
+function initAWD(filecontent)
+{
+   var fov = 45;
+   var near = 1;
+   var far = 2000;
+   var posX = 0;
+   var posY = 0;
+   var posZ = 100;
+   setcamera(fov, near, far, posX, posY, posZ);
+   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+   scene = new Three.Scene();
+   scene.background = new Three.Color(0x72645b);
+   var awdloader = new Three.AWDLoader();
+ 
+   var trunk = awdloader.parse(filecontent);
+   scene.add(trunk);
+   console.log(trunk);
+   var volume = 0;
+   var surface = 0;
+   
+     trunk.traverse(function (child) {
+       if (child instanceof Three.Mesh) {
+         console.log(child.geometry);
+         var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+         var volumesurface = calc_vol_and_area(geo);
+         volume = volume + volumesurface[0];
+         surface = surface + volumesurface[1];
+         returnVal = [volume, surface];
+         console.log(returnVal);
+         var dim = calc_dimensions(geo);
+         console.log(dim);
+         returnDim = dim;
+
+       
+       }
+     });
+      displayinfos(returnVal, returnDim);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  
+  return trunk;
+
+
+
+  }
 function initKMZ(filecontent)
 {
     var fov = 45;
