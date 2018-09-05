@@ -27,10 +27,10 @@ export function initupload() {
   inputupload = document.createElement('input');
   inputupload.setAttribute('id', 'fileinput');
   inputupload.setAttribute('type', 'file');
-  //   inputupload.setAttribute('onchange', prepareuploadfile());
+
   inputupload.setAttribute('class', "form-control");
   x.appendChild(inputupload);
-  //inputupload.addEventListener("change", prepareuploadfile());
+  
   document.getElementById("fileinput").addEventListener("change", function () {
     prepareuploadfile();
   });
@@ -204,7 +204,7 @@ function loadfile(extension, file) {
   switch (extension.trim()) {
     case '3ds':
       reader.onload = function (event) {
-        // The file's text will be printed here
+      
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -216,7 +216,7 @@ function loadfile(extension, file) {
 
     case "3mf":
       reader.onload = function (event) {
-        // The file's text will be printed here
+   
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -227,7 +227,7 @@ function loadfile(extension, file) {
       break;
     case "amf":
       reader.onload = function (event) {
-        // The file's text will be printed here
+  
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -301,7 +301,7 @@ function loadfile(extension, file) {
       break;
     case "babylon":
        reader.onload = function (event) {
-         // The file's text will be printed here
+      
          filecontent = event.target.result;
          localStorage.clear('file');
          localStorage.setItem('file', filecontent);
@@ -313,7 +313,7 @@ function loadfile(extension, file) {
       break;
     case "dae":
       reader.onload = function (event) {
-        // The file's text will be printed here
+       
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -325,7 +325,7 @@ function loadfile(extension, file) {
       break;
     case "ctm":
       reader.onload = function (event) {
-        // The file's text will be printed here
+      
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -469,7 +469,7 @@ function loadfile(extension, file) {
 
     case "obj":
       reader.onload = function (event) {
-        // The file's text will be printed here
+     
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -480,7 +480,7 @@ function loadfile(extension, file) {
       break;
     case "ply":
       reader.onload = function (event) {
-        // The file's text will be printed here
+        
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -491,7 +491,7 @@ function loadfile(extension, file) {
       break;
     case "prwm":
       reader.onload = function (event) {
-        // The file's text will be printed here
+       
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -502,7 +502,7 @@ function loadfile(extension, file) {
       break;
     case "STL":
       reader.onload = function (event) {
-        // The file's text will be printed here
+   
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -513,7 +513,7 @@ function loadfile(extension, file) {
       break;
     case "stl":
      reader.onload = function (event) {
-       // The file's text will be printed here
+    
        filecontent = event.target.result;
        localStorage.clear('file');
        localStorage.setItem('file', filecontent);
@@ -524,21 +524,16 @@ function loadfile(extension, file) {
      break;
     case "wrl":
         reader.onload = function (event) {
-          // The file's text will be printed here
-          filecontent = event.target.result;
-          localStorage.clear('file');
-          localStorage.setItem('file', filecontent);
-          console.log(filecontent);
-          ModelToReturn = initvrml(filecontent);
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+         ModelToReturn = initvrml(filecontent);
         };
         reader.readAsText(file);
         break;
-
-
-
-    default:
-      var text = "I have never heard of that fruit...";
-      //   alert(extension);
+ default:
+     
   }
 }
 
