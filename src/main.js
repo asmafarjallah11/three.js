@@ -1,5 +1,9 @@
 var pako = require('pako');
 import * as Three from 'three-full';
+import {
+  LoaderUtils
+}
+from 'three-full';
 
 
 var extension;
@@ -13,6 +17,7 @@ var returnVal;
 var returnDim;
 var ModelToReturn;
 var CameraToReturn;
+var gltfobject = null;
  
 var mainuploadcomtainer = document.getElementById('scriptmain');
 
@@ -357,9 +362,10 @@ function loadfile(extension, file) {
          localStorage.clear('file');
          localStorage.setItem('file', filecontent);
          console.log(filecontent);
-         ModelToReturn = initgltf(filecontent);
+          initgltf(filecontent);
+         console.log(ModelToReturn);
        };
-       reader.readAsText(file);
+       reader.readAsArrayBuffer(file);
        break;
     case "js":
       reader.onload = function (event) {
@@ -492,11 +498,49 @@ function setcamera(fov, near, far, posX, posY, posZ) {
   localStorage.setItem('posZ', posZ);
 }
 function initgltf(filecontent)
-{
-   var json = JSON.parse(filecontent);
-   console.log(json);
+{ var objecttoreturn;
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+   var gltfloader = new Three.GLTFLoader();
+ gltfloader.parse(filecontent, null, function callback(gltf) {
+
+   console.log(gltf);
+     gltf.scene.traverse(function (child) {
+           if (child instanceof Three.Mesh) {
+          scene.add(child);
+          objecttoreturn = child ;
+          console.log(child.geometry);
+          var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+       
+          console.log(geo);
+
+          var volume = calc_vol_and_area(geo);
+          returnVal = volume;
+          console.log(volume);
+          var dim = calc_dimensions(geo);
+          console.log(dim);
+          returnDim = dim;
+    }
+    });
+   displayinfos(returnVal, returnDim);
+    renderer = new Three.WebGLRenderer({
+      antialias: true
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+    console.log(objecttoreturn);
+    ModelToReturn = objecttoreturn;
    
-var parser = new GLTFParser(json);
+
+ });
 
 }
 function initAWD(filecontent)
