@@ -245,6 +245,7 @@ function loadfile(extension, file) {
       break;
 
     case "assimp":
+    // ASSIMP TOUT COURT
       reader.onload = function (event) {
 
         filecontent = event.target.result;
@@ -257,22 +258,15 @@ function loadfile(extension, file) {
       break;
     case "json":
       // assimp json 
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/AssimpJSONLoader.js');
-      x.setAttribute('id', 'assimpscript');
-      scriptsdiv.appendChild(x);
+      reader.onload = function (event) {
 
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/assimpjsonscene.js');
-        x.setAttribute('id', 'assimpjsonscene');
-        scriptsdiv.appendChild(x);
-      }, 300);
+        filecontent = event.target.result;
+        localStorage.clear('fi*le');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initassimpjson(filecontent);
+      };
+      reader.readAsText(file);
       break;
 
     case "awd":
@@ -361,6 +355,7 @@ function loadfile(extension, file) {
       reader.readAsArrayBuffer(file);
       break;
     case "pmd":
+    // there is a problem of parsing 
       reader.onload = function (event) {
         filecontent = event.target.result;
         localStorage.clear('file');
@@ -368,7 +363,7 @@ function loadfile(extension, file) {
         console.log(filecontent);
         ModelToReturn = initPMD(filecontent);
       };
-      reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
       break;
 
     case "obj":
@@ -457,12 +452,6 @@ function setScale(pScale) {
   scale = pScale;
 }
 
-function initPMD(filecontent) {
-  var loader = new Three.MMDLoader();
-  var parser = loader._getParser();
-  console.log(parser.parsePmd(filecontent, true));
-
-}
 
 function setcamera(fov, near, far, posX, posY, posZ) {
 
@@ -475,9 +464,107 @@ function setcamera(fov, near, far, posX, posY, posZ) {
   localStorage.setItem('posY', posY);
   localStorage.setItem('posZ', posZ);
 }
+function initassimpjson(filecontent)
+{
+   var fov = 45;
+   var near = 1;
+   var far = 2000;
+   var posX = 0;
+   var posY = 0;
+   var posZ = 100;
+   setcamera(fov, near, far, posX, posY, posZ);
+   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+   scene = new Three.Scene();
+   var loader = new Three.AssimpJSONLoader();
+   console.log(loader);
+  var json = JSON.parse(filecontent);
+   console.log(json);
+   console.log(json.__metadata__);
+  var result = loader.parse(json,null);
+  console.log(result);
+ result.traverse(function (child) {
+   if (child instanceof Three.Mesh) {
+     child.material = new Three.MeshStandardMaterial({
+       color: 0x0055ff,
+       flatShading: true
+     });
+     child.scale.set(2,2,2);
+     child.position.set(0, 0, 0);
+     console.log(child.geometry);
+     var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+     console.log(geo);
+     var volume = calc_vol_and_area(geo);
+     returnVal = volume;
+     console.log(volume);
+     var dim = calc_dimensions(geo);
+     console.log(dim);
+     returnDim = dim;
+   }
+ });
+ scene.add(result);
+ displayinfos(returnVal, returnDim);
+ renderer = new Three.WebGLRenderer({
+   antialias: true
+ });
+ renderer.setSize(container.clientWidth, container.clientHeight);
+ container.appendChild(renderer.domElement);
+ console.log(result);
+ return result;
+
+
+}
+// problem of conversion 
+function initPMD(filecontent) {
+  
+   var fov = 45;
+   var near = 1;
+   var far = 2000;
+   var posX = 0;
+   var posY = 0;
+   var posZ = 100;
+   setcamera(fov, near, far, posX, posY, posZ);
+   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+   scene = new Three.Scene();
+
+  var loader = new Three.MMDLoader();
+  var parser = loader._getParser();
+  var geo = parser.parsePmd(filecontent, true);
+  console.log(geo);
+ 
+    /*console.log(geo);
+    var geometry = new Three.Geometry();
+    geometry.faces = geo.faces;
+    geometry.vertices = geo.vertices ;
+     geometry.computeFlatVertexNormals();
+     geometry.computeVertexNormals();
+    var volume = calc_vol_and_area(geometry);
+    returnVal = volume;
+    var dim = calc_dimensions(geometry);
+    returnDim = dim;
+    console.log(returnVal);
+    console.log(returnDim);
+    */
+  var material = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
+  });
+  
+
+
+  var mesh = new Three.Mesh(geo, material);
+  scene.add(mesh);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  //displayinfos(returnVal, returnDim);
+  return mesh;
+
+}
 
 function initassimp(filecontent) {
-  var objecttoreturn;
+ 
   var fov = 45;
   var near = 1;
   var far = 2000;
