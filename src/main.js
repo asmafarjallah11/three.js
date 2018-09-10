@@ -18,7 +18,7 @@ var returnDim;
 var ModelToReturn;
 var CameraToReturn;
 var gltfobject = null;
- 
+
 var mainuploadcomtainer = document.getElementById('scriptmain');
 
 export function initupload() {
@@ -36,7 +36,7 @@ export function initupload() {
 
   inputupload.setAttribute('class', "form-control");
   x.appendChild(inputupload);
-  
+
   document.getElementById("fileinput").addEventListener("change", function () {
     prepareuploadfile();
   });
@@ -119,50 +119,52 @@ export function init() {
   x.setAttribute('type', 'js');
   scriptsdiv.appendChild(x);
 }
- function calc_vol_and_area(geo) {
-   var x1, x2, x3, y1, y2, y3, z1, z2, z3, i;
-   var len = geo.faces.length;
-   var totalVolume = 0;
-   var totalArea = 0;
-   var a, b, c, s;
 
-   for (i = 0; i < len; i++) {
-     x1 = geo.vertices[geo.faces[i].a].x;
-     y1 = geo.vertices[geo.faces[i].a].y;
-     z1 = geo.vertices[geo.faces[i].a].z;
-     x2 = geo.vertices[geo.faces[i].b].x;
-     y2 = geo.vertices[geo.faces[i].b].y;
-     z2 = geo.vertices[geo.faces[i].b].z;
-     x3 = geo.vertices[geo.faces[i].c].x;
-     y3 = geo.vertices[geo.faces[i].c].y;
-     z3 = geo.vertices[geo.faces[i].c].z;
+function calc_vol_and_area(geo) {
+  var x1, x2, x3, y1, y2, y3, z1, z2, z3, i;
+  var len = geo.faces.length;
+  var totalVolume = 0;
+  var totalArea = 0;
+  var a, b, c, s;
 
-     totalVolume +=
-       (-x3 * y2 * z1 +
-         x2 * y3 * z1 +
-         x3 * y1 * z2 -
-         x1 * y3 * z2 -
-         x2 * y1 * z3 +
-         x1 * y2 * z3);
+  for (i = 0; i < len; i++) {
+    x1 = geo.vertices[geo.faces[i].a].x;
+    y1 = geo.vertices[geo.faces[i].a].y;
+    z1 = geo.vertices[geo.faces[i].a].z;
+    x2 = geo.vertices[geo.faces[i].b].x;
+    y2 = geo.vertices[geo.faces[i].b].y;
+    z2 = geo.vertices[geo.faces[i].b].z;
+    x3 = geo.vertices[geo.faces[i].c].x;
+    y3 = geo.vertices[geo.faces[i].c].y;
+    z3 = geo.vertices[geo.faces[i].c].z;
 
-     a = geo.vertices[geo.faces[i].a].distanceTo(geo.vertices[geo.faces[i].b]);
-     b = geo.vertices[geo.faces[i].b].distanceTo(geo.vertices[geo.faces[i].c]);
-     c = geo.vertices[geo.faces[i].c].distanceTo(geo.vertices[geo.faces[i].a]);
-     s = (a + b + c) / 2;
-     totalArea += Math.sqrt(s * (s - a) * (s - b) * (s - c));
-   }
+    totalVolume +=
+      (-x3 * y2 * z1 +
+        x2 * y3 * z1 +
+        x3 * y1 * z2 -
+        x1 * y3 * z2 -
+        x2 * y1 * z3 +
+        x1 * y2 * z3);
 
-   return vol_and_area = [Math.abs(totalVolume / 6), totalArea];
- }
+    a = geo.vertices[geo.faces[i].a].distanceTo(geo.vertices[geo.faces[i].b]);
+    b = geo.vertices[geo.faces[i].b].distanceTo(geo.vertices[geo.faces[i].c]);
+    c = geo.vertices[geo.faces[i].c].distanceTo(geo.vertices[geo.faces[i].a]);
+    s = (a + b + c) / 2;
+    totalArea += Math.sqrt(s * (s - a) * (s - b) * (s - c));
+  }
 
- function calc_dimensions(geo) {
-   geo.computeBoundingBox();
-   var xsize = geo.boundingBox.max.x - geo.boundingBox.min.x;
-   var ysize = geo.boundingBox.max.y - geo.boundingBox.min.y;
-   var zsize = geo.boundingBox.max.z - geo.boundingBox.min.z;
-   return dimensions = [xsize, ysize, zsize];
- }
-function displayinfos(returnVal, returnDim) { 
+  return vol_and_area = [Math.abs(totalVolume / 6), totalArea];
+}
+
+function calc_dimensions(geo) {
+  geo.computeBoundingBox();
+  var xsize = geo.boundingBox.max.x - geo.boundingBox.min.x;
+  var ysize = geo.boundingBox.max.y - geo.boundingBox.min.y;
+  var zsize = geo.boundingBox.max.z - geo.boundingBox.min.z;
+  return dimensions = [xsize, ysize, zsize];
+}
+
+function displayinfos(returnVal, returnDim) {
   var table = document.createElement('table');
   table.setAttribute('id', 'tabinfo');
   var tr = table.appendChild(document.createElement('tr'));
@@ -209,7 +211,7 @@ function loadfile(extension, file) {
   switch (extension.trim()) {
     case '3ds':
       reader.onload = function (event) {
-      
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -221,18 +223,18 @@ function loadfile(extension, file) {
 
     case "3mf":
       reader.onload = function (event) {
-   
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
         console.log(filecontent);
-         ModelToReturn = initthreemf(filecontent);
+        ModelToReturn = initthreemf(filecontent);
       };
       reader.readAsArrayBuffer(file);
       break;
     case "amf":
       reader.onload = function (event) {
-  
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -243,16 +245,16 @@ function loadfile(extension, file) {
       break;
 
     case "assimp":
-   reader.onload = function (event) {
+      reader.onload = function (event) {
 
-     filecontent = event.target.result;
-     localStorage.clear('fi*le');
-     localStorage.setItem('file', filecontent);
-     console.log(filecontent);
-     ModelToReturn = initassimp(filecontent);
-   };
-   reader.readAsArrayBuffer(file);
-   break;
+        filecontent = event.target.result;
+        localStorage.clear('fi*le');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initassimp(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
+      break;
     case "json":
       // assimp json 
       var x = document.createElement("script");
@@ -274,32 +276,32 @@ function loadfile(extension, file) {
       break;
 
     case "awd":
-       reader.onload = function (event) {
+      reader.onload = function (event) {
 
-         filecontent = event.target.result;
-         localStorage.clear('file');
-         localStorage.setItem('file', filecontent);
-         console.log(filecontent);
-         ModelToReturn = initAWD(filecontent);
-       };
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initAWD(filecontent);
+      };
 
-       reader.readAsArrayBuffer(file);
+      reader.readAsArrayBuffer(file);
       break;
     case "babylon":
-       reader.onload = function (event) {
-      
-         filecontent = event.target.result;
-         localStorage.clear('file');
-         localStorage.setItem('file', filecontent);
-         console.log(filecontent);
-         ModelToReturn = initBABYLON(filecontent);
-       };
+      reader.onload = function (event) {
 
-       reader.readAsText(file);
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initBABYLON(filecontent);
+      };
+
+      reader.readAsText(file);
       break;
     case "dae":
       reader.onload = function (event) {
-       
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -309,7 +311,7 @@ function loadfile(extension, file) {
 
       reader.readAsText(file);
       break;
-    
+
     case "fbx":
       reader.onload = function (event) {
         // The file's text will be printed here
@@ -323,18 +325,18 @@ function loadfile(extension, file) {
       break;
 
     case "glb":
-    // problem 
-       reader.onload = function (event) {
-         // The file's text will be printed here
-         filecontent = event.target.result;
-         localStorage.clear('file');
-         localStorage.setItem('file', filecontent);
-         console.log(filecontent);
-          initgltf(filecontent);
-         console.log(ModelToReturn);
-       };
-       reader.readAsArrayBuffer(file);
-       break;
+      // problem 
+      reader.onload = function (event) {
+        // The file's text will be printed here
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        initgltf(filecontent);
+        console.log(ModelToReturn);
+      };
+      reader.readAsArrayBuffer(file);
+      break;
 
     case "js":
       reader.onload = function (event) {
@@ -348,30 +350,30 @@ function loadfile(extension, file) {
       reader.readAsText(file);
       break;
     case "kmz":
-reader.onload = function (event) {
- 
-  filecontent = event.target.result;
-  localStorage.clear('file');
-  localStorage.setItem('file', filecontent);
-  console.log(filecontent);
-  ModelToReturn = initKMZ(filecontent);
-};
-reader.readAsArrayBuffer(file);
+      reader.onload = function (event) {
+
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initKMZ(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
       break;
     case "pmd":
-    reader.onload = function (event) {
-      filecontent = event.target.result;
-      localStorage.clear('file');
-      localStorage.setItem('file', filecontent);
-      console.log(filecontent);
-      ModelToReturn = initPMD(filecontent);
-    };
-    reader.readAsText(file);
+      reader.onload = function (event) {
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initPMD(filecontent);
+      };
+      reader.readAsText(file);
       break;
 
     case "obj":
       reader.onload = function (event) {
-     
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -382,7 +384,7 @@ reader.readAsArrayBuffer(file);
       break;
     case "ply":
       reader.onload = function (event) {
-        
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -393,7 +395,7 @@ reader.readAsArrayBuffer(file);
       break;
     case "prwm":
       reader.onload = function (event) {
-       
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -404,7 +406,7 @@ reader.readAsArrayBuffer(file);
       break;
     case "STL":
       reader.onload = function (event) {
-   
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
@@ -414,28 +416,28 @@ reader.readAsArrayBuffer(file);
       reader.readAsArrayBuffer(file);
       break;
     case "stl":
-     reader.onload = function (event) {
-    
-       filecontent = event.target.result;
-       localStorage.clear('file');
-       localStorage.setItem('file', filecontent);
-       console.log(filecontent);
-       ModelToReturn = initstl(filecontent);
-     };
-     reader.readAsArrayBuffer(file);
-     break;
-    case "wrl":
-        reader.onload = function (event) {
+      reader.onload = function (event) {
+
         filecontent = event.target.result;
         localStorage.clear('file');
         localStorage.setItem('file', filecontent);
         console.log(filecontent);
-         ModelToReturn = initvrml(filecontent);
-        };
-        reader.readAsText(file);
-        break;
- default:
-     
+        ModelToReturn = initstl(filecontent);
+      };
+      reader.readAsArrayBuffer(file);
+      break;
+    case "wrl":
+      reader.onload = function (event) {
+        filecontent = event.target.result;
+        localStorage.clear('file');
+        localStorage.setItem('file', filecontent);
+        console.log(filecontent);
+        ModelToReturn = initvrml(filecontent);
+      };
+      reader.readAsText(file);
+      break;
+    default:
+
   }
 }
 
@@ -454,13 +456,13 @@ function getScaledInfo() {
 function setScale(pScale) {
   scale = pScale;
 }
-function initPMD(filecontent)
-{
+
+function initPMD(filecontent) {
   var loader = new Three.MMDLoader();
   var parser = loader._getParser();
   console.log(parser.parsePmd(filecontent, true));
 
-  }
+}
 
 function setcamera(fov, near, far, posX, posY, posZ) {
 
@@ -473,58 +475,9 @@ function setcamera(fov, near, far, posX, posY, posZ) {
   localStorage.setItem('posY', posY);
   localStorage.setItem('posZ', posZ);
 }
-function initassimp(filecontent)
-{
-   var objecttoreturn;
-   var fov = 45;
-   var near = 1;
-   var far = 2000;
-   var posX = 0;
-   var posY = 0;
-   var posZ = 100;
-   setcamera(fov, near, far, posX, posY, posZ);
-   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
-   scene = new Three.Scene();
-   scene.background = new Three.Color(0x72645b);
-  var assimploader = new Three.AssimpLoader();
-  
-  var result = assimploader.parse(filecontent);
 
-  console.log(result);
-var object = result.object;
-console.log(object);
-     object.traverse(function (child) {
-       if (child instanceof Three.Mesh) {
-         child.material = new Three.MeshStandardMaterial({
-           color: 0x0055ff,
-           flatShading: true
-         });
-         console.log(child.geometry);
-         var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
-         console.log(geo);
-         var volume = calc_vol_and_area(geo);
-         returnVal = volume;
-         console.log(volume);
-         var dim = calc_dimensions(geo);
-         console.log(dim);
-         returnDim = dim;
-       }
-     });
-
-     scene.add(object);
-       displayinfos(returnVal, returnDim);
-       renderer = new Three.WebGLRenderer({
-         antialias: true
-       });
-       renderer.setSize(container.clientWidth, container.clientHeight);
-       container.appendChild(renderer.domElement);
-       console.log(object);
-      return object;
-       
-  
-  }
-function initgltf(filecontent)
-{ var objecttoreturn;
+function initassimp(filecontent) {
+  var objecttoreturn;
   var fov = 45;
   var near = 1;
   var far = 2000;
@@ -535,32 +488,82 @@ function initgltf(filecontent)
   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
   scene = new Three.Scene();
   scene.background = new Three.Color(0x72645b);
-   var gltfloader = new Three.GLTFLoader();
- gltfloader.parse(filecontent, null, function callback(gltf) {
+  var assimploader = new Three.AssimpLoader();
 
-   console.log(gltf);
-     gltf.scene.traverse(function (child) {
-           if (child instanceof Three.Mesh) {
-               child.material = new Three.MeshStandardMaterial({
-                 color: 0x0055ff,
-                 flatShading: true
-               });
-          scene.add(child);
-          objecttoreturn = child ;
-          console.log(child.geometry);
-          var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
-       
-          console.log(geo);
+  var result = assimploader.parse(filecontent);
 
-          var volume = calc_vol_and_area(geo);
-          returnVal = volume;
-          console.log(volume);
-          var dim = calc_dimensions(geo);
-          console.log(dim);
-          returnDim = dim;
+  console.log(result);
+  var object = result.object;
+  console.log(object);
+  object.traverse(function (child) {
+    if (child instanceof Three.Mesh) {
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
+      console.log(child.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+      console.log(geo);
+      var volume = calc_vol_and_area(geo);
+      returnVal = volume;
+      console.log(volume);
+      var dim = calc_dimensions(geo);
+      console.log(dim);
+      returnDim = dim;
     }
+  });
+
+  scene.add(object);
+  displayinfos(returnVal, returnDim);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  console.log(object);
+  return object;
+
+
+}
+
+function initgltf(filecontent) {
+  var objecttoreturn;
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+  var gltfloader = new Three.GLTFLoader();
+  gltfloader.parse(filecontent, null, function callback(gltf) {
+
+    console.log(gltf);
+    gltf.scene.traverse(function (child) {
+      if (child instanceof Three.Mesh) {
+        child.material = new Three.MeshStandardMaterial({
+          color: 0x0055ff,
+          flatShading: true
+        });
+        scene.add(child);
+        objecttoreturn = child;
+        console.log(child.geometry);
+        var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+
+        console.log(geo);
+
+        var volume = calc_vol_and_area(geo);
+        returnVal = volume;
+        console.log(volume);
+        var dim = calc_dimensions(geo);
+        console.log(dim);
+        returnDim = dim;
+      }
     });
-   displayinfos(returnVal, returnDim);
+    displayinfos(returnVal, returnDim);
     renderer = new Three.WebGLRenderer({
       antialias: true
     });
@@ -568,192 +571,192 @@ function initgltf(filecontent)
     container.appendChild(renderer.domElement);
     console.log(objecttoreturn);
     ModelToReturn = objecttoreturn;
-   
 
- });
+
+  });
 
 }
-function initAWD(filecontent)
-{
-   var fov = 45;
-   var near = 1;
-   var far = 2000;
-   var posX = 0;
-   var posY = 0;
-   var posZ = 100;
-   setcamera(fov, near, far, posX, posY, posZ);
-   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
-   scene = new Three.Scene();
-   scene.background = new Three.Color(0x72645b);
-   var awdloader = new Three.AWDLoader();
- 
-   var trunk = awdloader.parse(filecontent);
-   scene.add(trunk);
-   console.log(trunk);
-   var volume = 0;
-   var surface = 0;
-   
-     trunk.traverse(function (child) {
-       if (child instanceof Three.Mesh) {
-         child.material = new Three.MeshStandardMaterial({
-           color: 0x0055ff,
-           flatShading: true
-         });
-         console.log(child.geometry);
-         var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
-         var volumesurface = calc_vol_and_area(geo);
-         volume = volume + volumesurface[0];
-         surface = surface + volumesurface[1];
-         returnVal = [volume, surface];
-         console.log(returnVal);
-         var dim = calc_dimensions(geo);
-         console.log(dim);
-         returnDim = dim;
 
-       
-       }
-     });
-      displayinfos(returnVal, returnDim);
+function initAWD(filecontent) {
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+  var awdloader = new Three.AWDLoader();
+
+  var trunk = awdloader.parse(filecontent);
+  scene.add(trunk);
+  console.log(trunk);
+  var volume = 0;
+  var surface = 0;
+
+  trunk.traverse(function (child) {
+    if (child instanceof Three.Mesh) {
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
+      console.log(child.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+      var volumesurface = calc_vol_and_area(geo);
+      volume = volume + volumesurface[0];
+      surface = surface + volumesurface[1];
+      returnVal = [volume, surface];
+      console.log(returnVal);
+      var dim = calc_dimensions(geo);
+      console.log(dim);
+      returnDim = dim;
+
+
+    }
+  });
+  displayinfos(returnVal, returnDim);
   renderer = new Three.WebGLRenderer({
     antialias: true
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
-  
+
   return trunk;
 
 
 
-  }
-function initKMZ(filecontent)
-{
-    var fov = 45;
-    var near = 1;
-    var far = 2000;
-    var posX = 0;
-    var posY = 0;
-    var posZ = 100;
-    setcamera(fov, near, far, posX, posY, posZ);
-    camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
-    scene = new Three.Scene();
-    scene.background = new Three.Color(0x72645b);
-   
-    var kmzloader = new Three.KMZLoader();
-    var kmzdata = kmzloader.parse(filecontent);
-    console.log(kmzdata);
-    var kmzobj = kmzdata.scene;
-    scene.add(kmzobj);
-    
-     kmzobj.traverse(function (object) {
+}
 
-       if (object instanceof Three.Mesh) {
-         child.material = new Three.MeshStandardMaterial({
-           color: 0x0055ff,
-           flatShading: true
-         });
-         console.log (object.scale);
-         object.scale.set(10,10,10);
-         object.rotation.set(Math.PI / 3, Math.PI / 3, Math.PI / 3);
-         console.log(object.scale);
-         console.log(object.geometry);
-         var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
-         console.log(geo);
+function initKMZ(filecontent) {
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
 
-         var volume = calc_vol_and_area(geo);
-         returnVal = volume;
-         console.log(volume);
-         var dim = calc_dimensions(geo);
-         console.log(dim);
-         returnDim = dim;
+  var kmzloader = new Three.KMZLoader();
+  var kmzdata = kmzloader.parse(filecontent);
+  console.log(kmzdata);
+  var kmzobj = kmzdata.scene;
+  scene.add(kmzobj);
 
-       };
+  kmzobj.traverse(function (object) {
 
-     });
-      
-       
-        renderer = new Three.WebGLRenderer({
-          antialias: true
-        });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(renderer.domElement);
-        displayinfos(returnVal, returnDim);
-        return kmzobj;
+    if (object instanceof Three.Mesh) {
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
+      console.log(object.scale);
+      object.scale.set(10, 10, 10);
+      object.rotation.set(Math.PI / 3, Math.PI / 3, Math.PI / 3);
+      console.log(object.scale);
+      console.log(object.geometry);
+      var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
+      console.log(geo);
 
-
-
-  }
-
-function initJS(filecontent) {
-    var fov = 45;
-    var near = 1;
-    var far = 2000;
-    var posX = 0;
-    var posY = 0;
-    var posZ = 100;
-    setcamera(fov, near, far, posX, posY, posZ);
-    camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
-    scene = new Three.Scene();
-    scene.background = new Three.Color(0x72645b);
-    scene.fog = new Three.Fog(0x72645b, 2, 15);
-
-     var json = JSON.parse(filecontent);
-     console.log(json);
-     var jsonloader = new Three.JSONLoader();
-     
-    
-     var object = jsonloader.parse(json, null);
-    
-     
-     console.log(object.geometry);
-       var material = new Three.MeshStandardMaterial({
-         color: 0x0055ff,
-         flatShading: true
-       });
-      var volume=0;var surface=0; 
-    var geometry = object.geometry;
-      var volume3d = calc_vol_and_area(geometry);
-      console.log(volume3d);
-       volume = volume + volume3d[0];
-       surface = surface + volume3d[1];
-      returnVal = [volume, surface];
-      var dim = calc_dimensions(geometry);
+      var volume = calc_vol_and_area(geo);
+      returnVal = volume;
+      console.log(volume);
+      var dim = calc_dimensions(geo);
       console.log(dim);
       returnDim = dim;
-      var mesh = new Three.Mesh(geometry, material);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-      renderer = new Three.WebGLRenderer({
-        antialias: true
-      });
-      var i = 5;
 
-      mesh.position.set(0, 0, 0);
+    };
 
-      //var s = THREE.Math.randFloat( 0.00075, 0.001 );
-      mesh.scale.set(0.1, 0.1, 0.1);
+  });
 
-      mesh.rotation.set(0, -Math.PI / 6, Math.PI / 6);
 
-      mesh.matrixAutoUpdate = false;
-      mesh.updateMatrix();
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  displayinfos(returnVal, returnDim);
+  return kmzobj;
 
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      container.appendChild(renderer.domElement);
-      displayinfos(returnVal, returnDim);
-      return mesh;
 
-  }
 
-function initDRACO(filecontent)
-{
+}
+
+function initJS(filecontent) {
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+  scene.fog = new Three.Fog(0x72645b, 2, 15);
+
+  var json = JSON.parse(filecontent);
+  console.log(json);
+  var jsonloader = new Three.JSONLoader();
+
+
+  var object = jsonloader.parse(json, null);
+
+
+  console.log(object.geometry);
+  var material = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
+  });
+  var volume = 0;
+  var surface = 0;
+  var geometry = object.geometry;
+  var volume3d = calc_vol_and_area(geometry);
+  console.log(volume3d);
+  volume = volume + volume3d[0];
+  surface = surface + volume3d[1];
+  returnVal = [volume, surface];
+  var dim = calc_dimensions(geometry);
+  console.log(dim);
+  returnDim = dim;
+  var mesh = new Three.Mesh(geometry, material);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  var i = 5;
+
+  mesh.position.set(0, 0, 0);
+
+  //var s = THREE.Math.randFloat( 0.00075, 0.001 );
+  mesh.scale.set(0.1, 0.1, 0.1);
+
+  mesh.rotation.set(0, -Math.PI / 6, Math.PI / 6);
+
+  mesh.matrixAutoUpdate = false;
+  mesh.updateMatrix();
+
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  displayinfos(returnVal, returnDim);
+  return mesh;
+
+}
+
+function initDRACO(filecontent) {
   console.log(filecontent);
   var loader = new Three.DRACOLoader();
-  loader.decodeDracoFile(filecontent, 
+  loader.decodeDracoFile(filecontent,
     function (geometry) {
-    console.log(geometry);
-  });
-  }
+      console.log(geometry);
+    });
+}
 
 function initBABYLON(filecontent) {
   var fov = 45;
@@ -807,6 +810,7 @@ function initBABYLON(filecontent) {
 
 
 }
+
 function initstl(filecontent) {
   var fov = 60;
   var near = 0.1;
@@ -870,7 +874,8 @@ function initstl(filecontent) {
   displayinfos(returnVal, returnDim);
   return mesh;
 }
- function initfbx(path) {
+
+function initfbx(path) {
   var fov = 45;
   var near = 1;
   var far = 2000;
@@ -956,7 +961,7 @@ function initstl(filecontent) {
 
 
 
- function initamf(path) {
+function initamf(path) {
 
   var fov = 45;
   var near = 1;
@@ -1007,10 +1012,10 @@ function initstl(filecontent) {
   console.log(object3d);
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
-  child.material = new Three.MeshStandardMaterial({
-    color: 0x0055ff,
-    flatShading: true
-  });
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
       console.log(child.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
       console.log(geo);
@@ -1036,6 +1041,7 @@ function initstl(filecontent) {
   object3d.rotation.set(-Math.PI / 2, -Math.PI / 2, 0);
   return object3d;
 }
+
 function initthreemf(path) {
   var fov = 45;
   var near = 1;
@@ -1109,11 +1115,11 @@ function initthreemf(path) {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
-     object3d.scale.set(0.1, 0.1, 0.1);
-    
-     object3d.position.set(-5, 0, 0);
-     object3d.rotation.set(-Math.PI / 2,0, 0);
-     return object3d;
+  object3d.scale.set(0.1, 0.1, 0.1);
+
+  object3d.position.set(-5, 0, 0);
+  object3d.rotation.set(-Math.PI / 2, 0, 0);
+  return object3d;
 
 }
 
@@ -1125,9 +1131,9 @@ function inittds(path) {
   var posY = 0;
   var posZ = 2;
   setcamera(fov, near, far, posX, posY, posZ);
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
-    camera.position.z = 2;
-   CameraToReturn = camera;
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
+  camera.position.z = 2;
+  CameraToReturn = camera;
 
   controls = new Three.OrbitControls(camera);
   controls.target.set(0, 100, 0);
@@ -1162,10 +1168,10 @@ function inittds(path) {
   console.log(object3d);
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
-       child.material = new Three.MeshStandardMaterial({
-         color: 0x0055ff,
-         flatShading: true
-       });
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
       console.log(child.geometry);
       var volume = calc_vol_and_area(child.geometry);
       returnVal = volume;
@@ -1200,12 +1206,12 @@ function initCOLLADA(group3d) {
   var posX = 0;
   var posY = 0;
   var posZ = 8;
-   setcamera(fov, near, far, posX, posY, posZ);
+  setcamera(fov, near, far, posX, posY, posZ);
   camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
   camera.position.set(8, 10, 8);
   camera.lookAt(new THREE.Vector3(0, 3, 0));
 
- CameraToReturn = camera;
+  CameraToReturn = camera;
 
   scene = new Three.Scene();
 
@@ -1220,11 +1226,11 @@ function initCOLLADA(group3d) {
   console.log(groupscene);
   groupscene.traverse(function (object) {
     if (object instanceof Three.Mesh) {
-        object.material = new Three.MeshStandardMaterial({
-          color: 0x0055ff,
-          flatShading: true
-        });
-       console.log(object);
+      object.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
+      console.log(object);
       console.log(object.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
       var volume = calc_vol_and_area(geo);
@@ -1253,7 +1259,7 @@ function initCOLLADA(group3d) {
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
   console.log(groupscene);
-  groupscene.scale.set(1,1,1);
+  groupscene.scale.set(1, 1, 1);
   groupscene.position.set(0, 0, 0);
   return groupscene;
 }
@@ -1284,16 +1290,16 @@ function initCTM(text3d) {
 }
 
 function initOBJ(text3d) {
-     var fov = 60;
-     var near = 0.1;
-     var far = 10;
-     var posX = 0;
-     var posY = 0;
-     var posZ = 2;
-     setcamera(fov, near, far, posX, posY, posZ);
-camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
-camera.position.z = 250;
- CameraToReturn = camera;
+  var fov = 60;
+  var near = 0.1;
+  var far = 10;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 2;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
+  camera.position.z = 250;
+  CameraToReturn = camera;
   controls = new Three.OrbitControls(camera);
   controls.target.set(0, 100, 0);
   controls.update();
@@ -1325,7 +1331,7 @@ camera.position.z = 250;
   var groupobj = loader.parse(text3d);
   var data = parse_obj(text3d);
   console.log(data);
-   scene.add(groupobj);
+  scene.add(groupobj);
   var geo = new Three.Geometry;
   var data = parse_obj(text3d);
   scene.add(data);
@@ -1347,108 +1353,8 @@ camera.position.z = 250;
   container.appendChild(renderer.domElement);
   return groupobj;
 }
+
 function initPLY(text3d) {
-  var fov = 60;
-  var near = 0.1;
-  var far = 10;
-  var posX = 0;
-  var posY = 0;
-  var posZ = 2;
-    setcamera(fov, near, far, posX, posY, posZ);
-    camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
-    camera.position.z = 250;
-    CameraToReturn = camera;
-    scene = new Three.Scene();
-    scene.background = new Three.Color(0x72645b);
-    scene.fog = new Three.Fog(0x72645b, 2, 15);
-    
-    var plane = new Three.Mesh(
-      new Three.PlaneBufferGeometry(40, 40),
-      new Three.MeshPhongMaterial({
-        color: 0x999999,
-        specular: 0x101010
-      })
-    );
-    plane.rotation.x = -Math.PI / 2;
-    plane.position.y = -0.5;
-    scene.add(plane);
-
-    plane.receiveShadow = true;
-    	var loader = new Three.PLYLoader();
-      var plybuffergeometry = loader.parse(text3d);
-      var material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
-        flatShading: true
-      });
-      var mesh = new Three.Mesh(plybuffergeometry, material);
-      
-      mesh.position.x = -0.2;
-      mesh.position.y = -0.02;
-      mesh.position.z = -0.2;
-      mesh.scale.multiplyScalar(0.002);
-
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      scene.add(mesh);
-       var geo = new Three.Geometry().fromBufferGeometry(plybuffergeometry);
-       console.log(geo);
-       var volume = calc_vol_and_area(geo);
-       returnVal = volume;
-       console.log(volume);
-       var dim = calc_dimensions(geo);
-       console.log(dim);
-       returnDim = dim;
-       displayinfos(returnVal, returnDim);
-        renderer = new Three.WebGLRenderer({
-          antialias: true
-        });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(renderer.domElement);
-       return mesh;
- }
- function initprwm (filecontent)
- {
-    var fov = 60;
-    var near = 0.1;
-    var far = 10;
-    var posX = 0;
-    var posY = 0;
-    var posZ = 2;
-    setcamera(fov, near, far, posX, posY, posZ);
-    camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
-    camera.position.z = 250;
-    CameraToReturn = camera;
-    scene = new Three.Scene();
-    scene.background = new Three.Color(0x72645b);
-    scene.fog = new Three.Fog(0x72645b, 2, 15);
-    var loader = new Three.PRWMLoader();
-    var geometry = loader.parse(filecontent);
-    console.log(geometry);
-     var material =  new Three.MeshStandardMaterial({
-       color: 0x0055ff,
-       flatShading: true
-     });
-     var mesh = new Three.Mesh(geometry, material);
-     var geo = new Three.Geometry().fromBufferGeometry(geometry);
-      var volume = calc_vol_and_area(geo);
-      console.log(volume);
-      returnVal = volume;
-      var dim = calc_dimensions(geo);
-      console.log(dim);
-      returnDim = dim;
-       displayinfos(returnVal, returnDim);
-       renderer = new Three.WebGLRenderer({
-         antialias: true
-       });
-       renderer.setPixelRatio(window.devicePixelRatio);
-       renderer.setSize(container.clientWidth, container.clientHeight);
-       container.appendChild(renderer.domElement);
-     return mesh;
-
-}
- function initvrml(filecontent)
- {
   var fov = 60;
   var near = 0.1;
   var far = 10;
@@ -1462,45 +1368,146 @@ function initPLY(text3d) {
   scene = new Three.Scene();
   scene.background = new Three.Color(0x72645b);
   scene.fog = new Three.Fog(0x72645b, 2, 15);
-    
-    const loader = new Three.VRMLLoader();
-    object3d = loader.parse(filecontent);
-    console.log(object3d);
-    object3d.traverse(function (child) {
-      if (child instanceof Three.Mesh) {
-        var material = new Three.MeshPhongMaterial({
-          color: 0xff5533,
-          specular: 0x111111,
-          shininess: 200
-        });
-        child.material = material;
-        console.log(child.geometry);
-          var geometry = new Three.Geometry().fromBufferGeometry(child.geometry);
-        var volume = calc_vol_and_area(geometry);
-        returnVal = volume;
-        console.log(volume);
-        var dim = calc_dimensions(child.geometry);
-        console.log(dim);
-        returnDim = dim;
-        //AFFICHAGE
-        displayinfos(returnVal, returnDim);
 
-      }
-    });
-    scene.add(object3d);
-    renderer = new Three.WebGLRenderer({
-      antialias: true
-    });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-    object3d.scale.set(1, 1, 1);
-    object3d.position.set(0, 0, 0);
-    return object3d;
- 
-    
+  var plane = new Three.Mesh(
+    new Three.PlaneBufferGeometry(40, 40),
+    new Three.MeshPhongMaterial({
+      color: 0x999999,
+      specular: 0x101010
+    })
+  );
+  plane.rotation.x = -Math.PI / 2;
+  plane.position.y = -0.5;
+  scene.add(plane);
+
+  plane.receiveShadow = true;
+  var loader = new Three.PLYLoader();
+  var plybuffergeometry = loader.parse(text3d);
+  var material = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
+  });
+  var mesh = new Three.Mesh(plybuffergeometry, material);
+
+  mesh.position.x = -0.2;
+  mesh.position.y = -0.02;
+  mesh.position.z = -0.2;
+  mesh.scale.multiplyScalar(0.002);
+
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+  var geo = new Three.Geometry().fromBufferGeometry(plybuffergeometry);
+  console.log(geo);
+  var volume = calc_vol_and_area(geo);
+  returnVal = volume;
+  console.log(volume);
+  var dim = calc_dimensions(geo);
+  console.log(dim);
+  returnDim = dim;
+  displayinfos(returnVal, returnDim);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  return mesh;
+}
+
+function initprwm(filecontent) {
+  var fov = 60;
+  var near = 0.1;
+  var far = 10;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 2;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
+  camera.position.z = 250;
+  CameraToReturn = camera;
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+  scene.fog = new Three.Fog(0x72645b, 2, 15);
+  var loader = new Three.PRWMLoader();
+  var geometry = loader.parse(filecontent);
+  console.log(geometry);
+  var material = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
+  });
+  var mesh = new Three.Mesh(geometry, material);
+  var geo = new Three.Geometry().fromBufferGeometry(geometry);
+  var volume = calc_vol_and_area(geo);
+  console.log(volume);
+  returnVal = volume;
+  var dim = calc_dimensions(geo);
+  console.log(dim);
+  returnDim = dim;
+  displayinfos(returnVal, returnDim);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  return mesh;
+
+}
+
+function initvrml(filecontent) {
+  var fov = 60;
+  var near = 0.1;
+  var far = 10;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 2;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
+  camera.position.z = 250;
+  CameraToReturn = camera;
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+  scene.fog = new Three.Fog(0x72645b, 2, 15);
+
+  const loader = new Three.VRMLLoader();
+  object3d = loader.parse(filecontent);
+  console.log(object3d);
+  object3d.traverse(function (child) {
+    if (child instanceof Three.Mesh) {
+      var material = new Three.MeshPhongMaterial({
+        color: 0xff5533,
+        specular: 0x111111,
+        shininess: 200
+      });
+      child.material = material;
+      console.log(child.geometry);
+      var geometry = new Three.Geometry().fromBufferGeometry(child.geometry);
+      var volume = calc_vol_and_area(geometry);
+      returnVal = volume;
+      console.log(volume);
+      var dim = calc_dimensions(child.geometry);
+      console.log(dim);
+      returnDim = dim;
+      //AFFICHAGE
+      displayinfos(returnVal, returnDim);
+
+    }
+  });
+  scene.add(object3d);
+  renderer = new Three.WebGLRenderer({
+    antialias: true
+  });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  object3d.scale.set(1, 1, 1);
+  object3d.position.set(0, 0, 0);
+  return object3d;
 
 
- }
+
+
+}
 // fonction pour le calcul de volume
 function parse_obj(s) {
   var obj_string = s;

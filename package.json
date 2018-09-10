@@ -83,6 +83,6 @@
     "pako": "1.0.6",
     "stream": "0.0.2",
     "three-addons": "1.2.0",
-    "three-full": "git+ssh://git://github.com/asmafarjallah11/three-full.git"
+    "three-full": "git+https://github.com/asmafarjallah11/three-full.git"
   }
 }
