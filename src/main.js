@@ -1,5 +1,9 @@
 var pako = require('pako');
 import * as Three from 'three-full';
+import {
+  LoaderUtils
+}
+from 'three-full';
 
 
 var extension;
@@ -13,6 +17,7 @@ var returnVal;
 var returnDim;
 var ModelToReturn;
 var CameraToReturn;
+var gltfobject = null;
  
 var mainuploadcomtainer = document.getElementById('scriptmain');
 
@@ -238,26 +243,16 @@ function loadfile(extension, file) {
       break;
 
     case "assimp":
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/Detector.js');
-      x.setAttribute('id', 'Detector');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/controls/OrbitControls.js');
-      x.setAttribute('id', 'OrbitControls');
-      scriptsdiv.appendChild(x);
-      var x = document.createElement("script");
-      x.setAttribute('src', 'examples/js/loaders/AssimpLoader.js');
-      x.setAttribute('id', 'assimpscript');
-      scriptsdiv.appendChild(x);
-      setTimeout(function () {
-        var x = document.createElement("script");
-        x.setAttribute('src', 'scenes/assimpscene.js');
-        x.setAttribute('id', 'assimpscene');
-        scriptsdiv.appendChild(x);
-      }, 500);
-      break;
+   reader.onload = function (event) {
 
+     filecontent = event.target.result;
+     localStorage.clear('fi*le');
+     localStorage.setItem('file', filecontent);
+     console.log(filecontent);
+     ModelToReturn = initassimp(filecontent);
+   };
+   reader.readAsArrayBuffer(file);
+   break;
     case "json":
       // assimp json 
       var x = document.createElement("script");
@@ -314,29 +309,7 @@ function loadfile(extension, file) {
 
       reader.readAsText(file);
       break;
-    case "ctm":
-      reader.onload = function (event) {
-      
-        filecontent = event.target.result;
-        localStorage.clear('file');
-        localStorage.setItem('file', filecontent);
-        console.log(filecontent);
-        initCTM(filecontent)
-      };
-      reader.readAsText(file);
-      break;
-    case "drc":  
-    //problem
-       reader.onload = function (event) {
-         // The file's text will be printed here
-         filecontent = event.target.result;
-         localStorage.clear('file');
-         localStorage.setItem('file', filecontent);
-         console.log(filecontent);
-         ModelToReturn = initDRACO(filecontent);
-       };
-       reader.readAsArrayBuffer(file);
-      break;
+    
     case "fbx":
       reader.onload = function (event) {
         // The file's text will be printed here
@@ -357,10 +330,12 @@ function loadfile(extension, file) {
          localStorage.clear('file');
          localStorage.setItem('file', filecontent);
          console.log(filecontent);
-         ModelToReturn = initgltf(filecontent);
+          initgltf(filecontent);
+         console.log(ModelToReturn);
        };
-       reader.readAsText(file);
+       reader.readAsArrayBuffer(file);
        break;
+
     case "js":
       reader.onload = function (event) {
         // The file's text will be printed here
@@ -479,6 +454,13 @@ function getScaledInfo() {
 function setScale(pScale) {
   scale = pScale;
 }
+function initPMD(filecontent)
+{
+  var loader = new Three.MMDLoader();
+  var parser = loader._getParser();
+  console.log(parser.parsePmd(filecontent, true));
+
+  }
 
 function setcamera(fov, near, far, posX, posY, posZ) {
 
@@ -491,12 +473,104 @@ function setcamera(fov, near, far, posX, posY, posZ) {
   localStorage.setItem('posY', posY);
   localStorage.setItem('posZ', posZ);
 }
-function initgltf(filecontent)
+function initassimp(filecontent)
 {
-   var json = JSON.parse(filecontent);
-   console.log(json);
+   var objecttoreturn;
+   var fov = 45;
+   var near = 1;
+   var far = 2000;
+   var posX = 0;
+   var posY = 0;
+   var posZ = 100;
+   setcamera(fov, near, far, posX, posY, posZ);
+   camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+   scene = new Three.Scene();
+   scene.background = new Three.Color(0x72645b);
+  var assimploader = new Three.AssimpLoader();
+  
+  var result = assimploader.parse(filecontent);
+
+  console.log(result);
+var object = result.object;
+console.log(object);
+     object.traverse(function (child) {
+       if (child instanceof Three.Mesh) {
+         child.material = new Three.MeshStandardMaterial({
+           color: 0x0055ff,
+           flatShading: true
+         });
+         console.log(child.geometry);
+         var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+         console.log(geo);
+         var volume = calc_vol_and_area(geo);
+         returnVal = volume;
+         console.log(volume);
+         var dim = calc_dimensions(geo);
+         console.log(dim);
+         returnDim = dim;
+       }
+     });
+
+     scene.add(object);
+       displayinfos(returnVal, returnDim);
+       renderer = new Three.WebGLRenderer({
+         antialias: true
+       });
+       renderer.setSize(container.clientWidth, container.clientHeight);
+       container.appendChild(renderer.domElement);
+       console.log(object);
+      return object;
+       
+  
+  }
+function initgltf(filecontent)
+{ var objecttoreturn;
+  var fov = 45;
+  var near = 1;
+  var far = 2000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
+  setcamera(fov, near, far, posX, posY, posZ);
+  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
+  scene = new Three.Scene();
+  scene.background = new Three.Color(0x72645b);
+   var gltfloader = new Three.GLTFLoader();
+ gltfloader.parse(filecontent, null, function callback(gltf) {
+
+   console.log(gltf);
+     gltf.scene.traverse(function (child) {
+           if (child instanceof Three.Mesh) {
+               child.material = new Three.MeshStandardMaterial({
+                 color: 0x0055ff,
+                 flatShading: true
+               });
+          scene.add(child);
+          objecttoreturn = child ;
+          console.log(child.geometry);
+          var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
+       
+          console.log(geo);
+
+          var volume = calc_vol_and_area(geo);
+          returnVal = volume;
+          console.log(volume);
+          var dim = calc_dimensions(geo);
+          console.log(dim);
+          returnDim = dim;
+    }
+    });
+   displayinfos(returnVal, returnDim);
+    renderer = new Three.WebGLRenderer({
+      antialias: true
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+    console.log(objecttoreturn);
+    ModelToReturn = objecttoreturn;
    
-var parser = new GLTFParser(json);
+
+ });
 
 }
 function initAWD(filecontent)
@@ -521,6 +595,10 @@ function initAWD(filecontent)
    
      trunk.traverse(function (child) {
        if (child instanceof Three.Mesh) {
+         child.material = new Three.MeshStandardMaterial({
+           color: 0x0055ff,
+           flatShading: true
+         });
          console.log(child.geometry);
          var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
          var volumesurface = calc_vol_and_area(geo);
@@ -569,6 +647,10 @@ function initKMZ(filecontent)
      kmzobj.traverse(function (object) {
 
        if (object instanceof Three.Mesh) {
+         child.material = new Three.MeshStandardMaterial({
+           color: 0x0055ff,
+           flatShading: true
+         });
          console.log (object.scale);
          object.scale.set(10,10,10);
          object.rotation.set(Math.PI / 3, Math.PI / 3, Math.PI / 3);
@@ -623,12 +705,11 @@ function initJS(filecontent) {
     
      
      console.log(object.geometry);
-      var material = new Three.MeshPhongMaterial({
-        color: 0xdc3545,
-        specular: 0x111111,
-        shininess: 200
-      });
-      var volume=0;var surface=0;
+       var material = new Three.MeshStandardMaterial({
+         color: 0x0055ff,
+         flatShading: true
+       });
+      var volume=0;var surface=0; 
     var geometry = object.geometry;
       var volume3d = calc_vol_and_area(geometry);
       console.log(volume3d);
@@ -645,14 +726,14 @@ function initJS(filecontent) {
       renderer = new Three.WebGLRenderer({
         antialias: true
       });
-      var x = ((i % 27) - 13.5) * 2 + Three.Math.randFloatSpread(1);
-      var z = (Math.floor(i / 27) - 13.5) * 2 + Three.Math.randFloatSpread(1);
-      mesh.position.set(x, 0, z);
+      var i = 5;
+
+      mesh.position.set(0, 0, 0);
 
       //var s = THREE.Math.randFloat( 0.00075, 0.001 );
-      mesh.scale.set(0.005, 0.005, 0.005);
+      mesh.scale.set(0.1, 0.1, 0.1);
 
-      mesh.rotation.y = Three.Math.randFloat(-0.25, 0.25);
+      mesh.rotation.set(0, -Math.PI / 6, Math.PI / 6);
 
       mesh.matrixAutoUpdate = false;
       mesh.updateMatrix();
@@ -671,33 +752,6 @@ function initDRACO(filecontent)
   loader.decodeDracoFile(filecontent, 
     function (geometry) {
     console.log(geometry);
-    geometry.computeVertexNormals();
-
-
-    var geo = new Three.Geometry().fromBufferGeometry(geometry);
-
-    var volume = calc_vol_and_area(geo);
-    returnVal = volume;
-    console.log(volume);
-    var dim = calc_dimensions(geo);
-    console.log(dim);
-    returnDim = dim;
- 
-    var material = new Three.MeshPhongMaterial({
-      color: 0xdc3545,
-      specular: 0x111111,
-      shininess: 200
-    });
-
-
-    var mesh = new Three.Mesh(geometry, material);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
-
-    // Release decoder resources.
-    Three.DRACOLoader.releaseDecoderModule();
-
   });
   }
 
@@ -724,8 +778,9 @@ function initBABYLON(filecontent) {
     if (object instanceof Three.Mesh) {
       console.log(object)
 
-      object.material = new Three.MeshPhongMaterial({
-        color: Math.random() * 0xffffff
+      object.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
       });
 
       console.log(object.geometry);
@@ -784,10 +839,9 @@ function initstl(filecontent) {
   plane.receiveShadow = true;
 
   var loader = new Three.STLLoader();
-  var material = new Three.MeshPhongMaterial({
-    color: 0xff5533,
-    specular: 0x111111,
-    shininess: 200
+  var material = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
   });
   var geometry = loader.parse(filecontent);
   console.log(geometry);
@@ -866,6 +920,10 @@ function initstl(filecontent) {
   //traversing the object
   object3d.traverse(function (child) {
     if (child.isSkinnedMesh) {
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
+      });
       console.log(child);
       console.log(child.geometry);
       child.castShadow = true;
@@ -907,14 +965,14 @@ function initstl(filecontent) {
   var posY = 0;
   var posZ = 6;
   setcamera(fov, near, far, posX, posY, posZ);
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
+  camera = new Three.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
 
   // Z is up for objects intended to be 3D printed.
 
   camera.up.set(0, 0, 1);
   camera.position.set(0, -9, 6);
 
-  camera.add(new THREE.PointLight(0xffffff, 0.8));
+  camera.add(new Three.PointLight(0xffffff, 0.8));
   CameraToReturn = camera;
   controls = new Three.OrbitControls(camera);
   controls.target.set(0, 100, 0);
@@ -949,7 +1007,10 @@ function initstl(filecontent) {
   console.log(object3d);
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
-
+  child.material = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
+  });
       console.log(child.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
       console.log(geo);
@@ -1021,12 +1082,10 @@ function initthreemf(path) {
   console.log(object3d);
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
-      var material = new Three.MeshPhongMaterial({
-        color: 0xff5533,
-        specular: 0x111111,
-        shininess: 200
+      child.material = new Three.MeshStandardMaterial({
+        color: 0x0055ff,
+        flatShading: true
       });
-      child.material = material;
       console.log(child.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
       console.log(geo);
@@ -1103,12 +1162,10 @@ function inittds(path) {
   console.log(object3d);
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
-      var material = new Three.MeshPhongMaterial({
-        color: 0xff5533,
-        specular: 0x111111,
-        shininess: 200
-      });
-      child.material = material;
+       child.material = new Three.MeshStandardMaterial({
+         color: 0x0055ff,
+         flatShading: true
+       });
       console.log(child.geometry);
       var volume = calc_vol_and_area(child.geometry);
       returnVal = volume;
@@ -1163,7 +1220,10 @@ function initCOLLADA(group3d) {
   console.log(groupscene);
   groupscene.traverse(function (object) {
     if (object instanceof Three.Mesh) {
-      
+        object.material = new Three.MeshStandardMaterial({
+          color: 0x0055ff,
+          flatShading: true
+        });
        console.log(object);
       console.log(object.geometry);
       var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
@@ -1248,10 +1308,10 @@ camera.position.z = 250;
 
   // scene.add( new THREE.CameraHelper( light.shadow.camera ) );
   // ground
-  var mesh = new Three.Mesh(new Three.PlaneGeometry(2000, 2000), new Three.MeshPhongMaterial({
-    color: 0x999999,
-    depthWrite: false
-  }));
+  var mesh = new Three.MeshStandardMaterial({
+    color: 0x0055ff,
+    flatShading: true
+  });
   mesh.rotation.x = -Math.PI / 2;
   mesh.receiveShadow = true;
   scene.add(mesh);
@@ -1365,7 +1425,7 @@ function initPLY(text3d) {
     var loader = new Three.PRWMLoader();
     var geometry = loader.parse(filecontent);
     console.log(geometry);
-     var material = new Three.MeshStandardMaterial({
+     var material =  new Three.MeshStandardMaterial({
        color: 0x0055ff,
        flatShading: true
      });

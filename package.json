@@ -79,6 +79,7 @@
     "@types/three": "0.92.17",
     "file-system": "^2.2.2",
     "jszip": "2.6.1",
+    "mmd-parser": "^1.0.3",
     "pako": "1.0.6",
     "stream": "0.0.2",
     "three-addons": "1.2.0",
