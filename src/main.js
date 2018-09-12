@@ -164,7 +164,7 @@ function calc_dimensions(geo) {
   return dimensions = [xsize, ysize, zsize];
 }
 
-function displayinfos(returnVal, returnDim) {
+export function displayinfos(returnVal, returnDim) {
   var table = document.createElement('table');
   table.setAttribute('id', 'tabinfo');
   var tr = table.appendChild(document.createElement('tr'));
@@ -737,7 +737,7 @@ function initKMZ(filecontent) {
   kmzobj.traverse(function (object) {
 
     if (object instanceof Three.Mesh) {
-      child.material = new Three.MeshStandardMaterial({
+      object.material = new Three.MeshStandardMaterial({
         color: 0x0055ff,
         flatShading: true
       });
@@ -1405,8 +1405,7 @@ function initOBJ(text3d) {
     color: 0x0055ff,
     flatShading: true
   });
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.receiveShadow = true;
+ 
   scene.add(mesh);
 
   var grid = new Three.GridHelper(2000, 20, 0x000000, 0x000000);
