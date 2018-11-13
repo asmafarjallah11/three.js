@@ -35,7 +35,12 @@ export function initupload() {
   var x = document.createElement('div');
   x.setAttribute('class', "form-group");
   formupload.appendChild(x);
+/*   inputupload = document.createElement('input');
+  inputupload.setAttribute('id', 'fileinput');
+  inputupload.setAttribute('type', 'file');
 
+  inputupload.setAttribute('class', "form-control");
+  x.appendChild(inputupload); */
   if (document.getElementById("fileinput") != null) {
     document.getElementById("fileinput").addEventListener("change", function () {
       initViewerandScripts();
@@ -730,8 +735,8 @@ function initAWD(filecontent) {
 
 function initKMZ(filecontent) {
   var fov = 45;
-  var near = 1;
-  var far = 2000;
+  var near = 0.1;
+  var far = 1000;
   var posX = 0;
   var posY = 0;
   var posZ = 100;
@@ -776,8 +781,8 @@ function initKMZ(filecontent) {
 
 function initJS(filecontent) {
   var fov = 45;
-  var near = 1;
-  var far = 2000;
+  var near = 0.1;
+  var far = 1000;
   var posX = 0;
   var posY = 0;
   var posZ = 100;
@@ -914,8 +919,8 @@ function initstl(filecontent) {
   var mesh = new Three.Mesh(geometry, material);
 
   mesh.position.set(0, 0, 0);
-  mesh.rotation.set(0, 0, 0);
-  mesh.scale.set(0.25, 0.25, 0.25);
+  mesh.rotation.set(0,0, 0);
+  mesh.scale.set(0.15,0.15,0.15);
 
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -937,6 +942,7 @@ function initfbx(path) {
   var posX = 0;
   var posY = 100;
   var posZ = 200;
+  
   setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(100, 200, 300);
@@ -1069,19 +1075,19 @@ function initamf(path) {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
-  object3d.scale.set(1, 1, 1);
+  object3d.scale.set(0.5,0.5,0.5);
   object3d.position.set(0, 0, 0);
-  object3d.rotation.set(-Math.PI / 2, -Math.PI / 2, 0);
+  object3d.rotation.set(0, 0, 0);
   return object3d;
 }
 
 function initthreemf(path) {
   var fov = 45;
-  var near = 1;
-  var far = 500;
+  var near = 0.1;
+  var far = 1000;
   var posX = 0;
   var posY = 0;
-  var posZ = 6;
+  var posZ = 100;
   setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(100, 200, 300);
@@ -1132,8 +1138,7 @@ function initthreemf(path) {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
-  object3d.scale.set(0.1, 0.1, 0.1);
-
+  object3d.scale.set(0.5,0.5,0.5);
   object3d.position.set(-5, 0, 0);
   object3d.rotation.set(-Math.PI / 2, 0, 0);
   return object3d;
@@ -1143,10 +1148,11 @@ function initthreemf(path) {
 function inittds(path) {
   var fov = 60;
   var near = 0.1;
-  var far = 10;
+  var far = 1000;
   var posX = 0;
   var posY = 0;
   var posZ = 2;
+  
   setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
   camera.position.z = 2;
@@ -1192,7 +1198,7 @@ function inittds(path) {
   });
   renderer.setSize(container.clientWidth, container.clientHeight);
   container.appendChild(renderer.domElement);
-  object3d.scale.set(1, 1, 1);
+  object3d.scale.set(0.5, 0.5, 0.5);
   object3d.position.set(0, 0, 0);
   return object3d;
 
@@ -1277,13 +1283,15 @@ function initCTM(text3d) {
 }
 
 function initOBJ(text3d) {
-  var fov = 60;
+  
+  var fov = 45;
   var near = 0.1;
-  var far = 10;
+  var far = 1000;
   var posX = 0;
   var posY = 0;
-  var posZ = 2;
+  var posZ = 100;
   setcamera(fov, near, far, posX, posY, posZ);
+ 
   camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
   camera.position.z = 250;
   CameraToReturn = camera;
@@ -1336,6 +1344,13 @@ function initPLY(text3d) {
   var posX = 0;
   var posY = 0;
   var posZ = 2;
+
+  var fov = 45;
+  var near = 0.1;
+  var far = 1000;
+  var posX = 0;
+  var posY = 0;
+  var posZ = 100;
   setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
   camera.position.z = 250;
