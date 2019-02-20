@@ -91,11 +91,12 @@ function initViewerandScripts() {
   var viewer = document.getElementById("viewerbox");
 
   viewer.style.width = "95%";
-  viewer.style.height = "700px";
+  viewer.style.height = "500px";
+  viewer.style.background = '#f8f9fa'
   viewer.style.position = "relative";
   viewer.style.left = "1%";
-  viewer.style.boxShadow = "3px 3px 3px 3px #bee5eb";
-  viewer.style.border = "1px solid #007bff";
+  viewer.style.boxShadow = "3px 3px 3px 3px #7776ac";
+  viewer.style.border = "1px solid #6f42c1";
   viewer.style.borderradius = "25rem";
   viewer.style.float = "left";
 
@@ -266,7 +267,7 @@ function loadfile(extension, file) {
       reader.readAsArrayBuffer(file);
       break;
     case "json":
-      // assimp json 
+      // assimp json
       reader.onload = function (event) {
 
         filecontent = event.target.result;
@@ -341,7 +342,7 @@ function loadfile(extension, file) {
       break;
 
     case "glb":
-      // problem 
+      // problem
       reader.onload = function (event) {
         // The file's text will be printed here
         filecontent = event.target.result;
@@ -384,7 +385,7 @@ function loadfile(extension, file) {
       reader.readAsArrayBuffer(file);
       break;
     case "pmd":
-      // there is a problem of parsing 
+      // there is a problem of parsing
       reader.onload = function (event) {
         filecontent = event.target.result;
         if (localStorage.getItem('file') != undefined) {
@@ -524,14 +525,7 @@ function initassimpjson(filecontent) {
   var posY = 0;
   var posZ = 100;
   setcamera(fov, near, far, posX, posY, posZ);
-  /*  camera = new Three.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 15);
-   var fov = 45;
-   var near = 0.1;
-   var far = 1000;
-   var posX = 0;
-   var posY = 0;
-   var posZ = 2;
-   setcamera(fov, near, far, posX, posY, posZ); */
+  
 
   camera = new Three.PerspectiveCamera(45, 1, 0.1, 1000);
   scene = new Three.Scene();
@@ -566,7 +560,7 @@ function initassimpjson(filecontent) {
 
 
 }
-// problem of conversion 
+// problem of conversion
 function initPMD(filecontent) {
 
   var fov = 45;
@@ -708,7 +702,7 @@ function initAWD(filecontent) {
   trunk.traverse(function (child) {
     if (child instanceof Three.Mesh) {
       child.material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
+        color: 0x6c757d,
         flatShading: true
       });
       var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
@@ -718,6 +712,19 @@ function initAWD(filecontent) {
       returnVal = [volume, surface];
       var dim = calc_dimensions(geo);
       returnDim = dim;
+
+      if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) {
+        child.scale.set(15 / returnDim[0], 15 / returnDim[0], 15 / returnDim[0]);
+      }
+
+      if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) {
+        child.scale.set(15 / returnDim[1], 15 / returnDim[1], 15 / returnDim[1]);
+      }
+
+      if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) {
+        child.scale.set(15 / returnDim[2], 15 / returnDim[2], 15 / returnDim[2]);
+      }
+
     }
   });
   // displayinfos(returnVal, returnDim);
@@ -854,7 +861,7 @@ function initBABYLON(filecontent) {
     if (object instanceof Three.Mesh) {
 
       object.material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
+        color: 0x6c757d,
         flatShading: true
       });
       var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
@@ -862,6 +869,20 @@ function initBABYLON(filecontent) {
       returnVal = volume;
       var dim = calc_dimensions(geo);
       returnDim = dim;
+
+      object.position.set(0, 0, 0);
+      object.rotation.set(0, 0, 0);
+      if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) {
+        object.scale.set(30 / returnDim[0], 30 / returnDim[0], 30 / returnDim[0]);
+      }
+
+      if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) {
+        object.scale.set(30 / returnDim[1], 30 / returnDim[1], 30 / returnDim[1]);
+      }
+
+      if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) {
+        object.scale.set(30 / returnDim[2], 30 / returnDim[2], 30 / returnDim[2]);
+      }
 
     }
 
@@ -881,17 +902,17 @@ function initBABYLON(filecontent) {
 
 function initstl(filecontent) {
   var fov = 45;
-  var near = 1;
-  var far = 1000;
+  var near = 0.01;
+  var far = 100;
   var posX = 0;
   var posY = 0;
-  var posZ = 2;
+  var posZ = 10;
   setcamera(fov, near, far, posX, posY, posZ);
 
-  camera = new Three.PerspectiveCamera(45, 1, 0.1, 1000);
+  camera = new Three.PerspectiveCamera(45, 1, 0.1, 10);
   scene = new Three.Scene();
-  scene.background = new Three.Color(0x72645b);
-  scene.fog = new Three.Fog(0x72645b, 2, 15);
+  scene.background = new Three.Color(0xf8f9fa);
+  scene.fog = new Three.Fog(0xf8f9fa, 2, 15);
   var plane = new Three.Mesh(
     new Three.PlaneBufferGeometry(40, 40),
     new Three.MeshPhongMaterial({
@@ -907,7 +928,7 @@ function initstl(filecontent) {
 
   var loader = new Three.STLLoader();
   var material = new Three.MeshStandardMaterial({
-    color: 0x0055ff,
+    color: 0x6c757d,
     flatShading: true
   });
   var geometry = loader.parse(filecontent);
@@ -917,10 +938,17 @@ function initstl(filecontent) {
   var dim = calc_dimensions(geo);
   returnDim = dim;
   var mesh = new Three.Mesh(geometry, material);
-
   mesh.position.set(0, 0, 0);
-  mesh.rotation.set(0,0, 0);
-  mesh.scale.set(0.15,0.15,0.15);
+  mesh.rotation.set(0, 0, 0);
+ 
+  if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2]))
+  {mesh.scale.set(5 / returnDim[0], 5 / returnDim[0], 5 / returnDim[0]);}
+
+  if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) 
+  { mesh.scale.set(5 / returnDim[1], 5 / returnDim[1], 5 / returnDim[1]); }
+
+  if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) 
+  { mesh.scale.set(5 / returnDim[2], 5 / returnDim[2], 5 / returnDim[2]); }
 
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -942,7 +970,7 @@ function initfbx(path) {
   var posX = 0;
   var posY = 100;
   var posZ = 200;
-  
+
   setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.set(100, 200, 300);
@@ -985,7 +1013,7 @@ function initfbx(path) {
   object3d.traverse(function (child) {
     if (child.isSkinnedMesh) {
       child.material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
+        color: 0x6c757d,
         flatShading: true
       });
       child.castShadow = true;
@@ -998,6 +1026,21 @@ function initfbx(path) {
       returnVal = [volume, surface];
       var dim = calc_dimensions(geo);
       returnDim = dim;
+
+      child.rotation.set(0, 0,0);
+      child.position.set(0, 0, 0);
+ 
+      if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) {
+        child.scale.set(100 / returnDim[0], 100 / returnDim[0], 100 / returnDim[0]);
+      }
+
+      if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) {
+        child.scale.set(100 / returnDim[1], 100 / returnDim[1], 100 / returnDim[1]);
+      }
+
+      if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) {
+        child.scale.set(100 / returnDim[2], 100 / returnDim[2], 100 / returnDim[2]);
+      }
     }
   });
   renderer = new Three.WebGLRenderer({
@@ -1059,7 +1102,7 @@ function initamf(path) {
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
       child.material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
+        color: 0x6c757d,
         flatShading: true
       });
       var geo = new Three.Geometry().fromBufferGeometry(child.geometry);
@@ -1067,6 +1110,19 @@ function initamf(path) {
       returnVal = volume;
       var dim = calc_dimensions(geo);
       returnDim = dim;
+      child.position.set(0, 0, 0);
+      child.rotation.set(- Math.PI / 2, 0, 0);
+      if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) {
+        child.scale.set(5 / returnDim[0], 5 / returnDim[0], 5 / returnDim[0]);
+      }
+
+      if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) {
+        child.scale.set(5 / returnDim[1], 5 / returnDim[1], 5 / returnDim[1]);
+      }
+
+      if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) {
+        child.scale.set(5 / returnDim[2], 5 / returnDim[2], 5 / returnDim[2]);
+      }
     }
   });
   scene.add(object3d);
@@ -1077,7 +1133,7 @@ function initamf(path) {
   container.appendChild(renderer.domElement);
   object3d.scale.set(0.5,0.5,0.5);
   object3d.position.set(0, 0, 0);
-  object3d.rotation.set(0, 0, 0);
+  
   return object3d;
 }
 
@@ -1152,7 +1208,7 @@ function inittds(path) {
   var posX = 0;
   var posY = 0;
   var posZ = 2;
-  
+
   setcamera(fov, near, far, posX, posY, posZ);
   camera = new Three.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
   camera.position.z = 2;
@@ -1183,13 +1239,31 @@ function inittds(path) {
   object3d.traverse(function (child) {
     if (child instanceof Three.Mesh) {
       child.material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
+        color: 0x6c757d,
         flatShading: true
       });
       var volume = calc_vol_and_area(child.geometry);
       returnVal = volume;
       var dim = calc_dimensions(child.geometry);
       returnDim = dim;
+
+      child.position.set(0, 0, 0);
+      child.rotation.set(0, 0, 0);
+      if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) 
+      {
+        child.scale.set(3/ returnDim[0], 3 / returnDim[0], 3 / returnDim[0]);
+      }
+
+      if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) 
+      {
+        child.scale.set(3 / returnDim[1], 3 / returnDim[1], 3 / returnDim[1]);
+      }
+
+      if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) 
+      {
+        child.scale.set(3 / returnDim[2], 3 / returnDim[2], 3 / returnDim[2]);
+      }
+
     }
   });
   scene.add(object3d);
@@ -1233,7 +1307,7 @@ function initCOLLADA(group3d) {
   groupscene.traverse(function (object) {
     if (object instanceof Three.Mesh) {
       object.material = new Three.MeshStandardMaterial({
-        color: 0x0055ff,
+        color: 0x6c757d,
         flatShading: true
       });
       var geo = new Three.Geometry().fromBufferGeometry(object.geometry);
@@ -1241,6 +1315,20 @@ function initCOLLADA(group3d) {
       returnVal = volume;
       var dim = calc_dimensions(geo);
       returnDim = dim;
+
+      object.position.set(0, 0, 0);
+      if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) {
+        object.scale.set(3 / returnDim[0], 3 / returnDim[0], 3 / returnDim[0]);
+      }
+
+      if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) {
+        object.scale.set(3 / returnDim[1], 3 / returnDim[1], 3 / returnDim[1]);
+      }
+
+      if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) {
+        object.scale.set(3 / returnDim[2], 3 / returnDim[2], 3 / returnDim[2]);
+      }
+
     };
   });
   var ambientLight = new Three.AmbientLight(0xcccccc, 0.4);
@@ -1283,17 +1371,17 @@ function initCTM(text3d) {
 }
 
 function initOBJ(text3d) {
-  
+
   var fov = 45;
   var near = 0.1;
-  var far = 1000;
+  var far = 100;
   var posX = 0;
   var posY = 0;
   var posZ = 100;
   setcamera(fov, near, far, posX, posY, posZ);
- 
-  camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 2000);
-  camera.position.z = 250;
+
+  camera = new Three.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+  camera.position.z = 100;
   CameraToReturn = camera;
   scene = new Three.Scene();
   scene.background = new Three.Color(0xa0a0a0);
@@ -1317,7 +1405,7 @@ function initOBJ(text3d) {
   var loader = new Three.OBJLoader();
   var groupobj = loader.parse(text3d);
   var data = parse_obj(text3d);
-  scene.add(groupobj);
+ 
   var geo = new Three.Geometry;
   var data = parse_obj(text3d);
   scene.add(data);
@@ -1328,6 +1416,29 @@ function initOBJ(text3d) {
   returnVal = volume;
   var dim = calc_dimensions(geo);
   returnDim = dim;
+  groupobj.traverse(function (object) {
+        if (object instanceof Three.Mesh) {
+          object.material = new Three.MeshStandardMaterial({
+            color: 0x6c757d,
+            flatShading: true
+          });
+
+          object.position.set(0, 0, 0);
+          if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2])) {
+            object.scale.set(75 / returnDim[0], 75 / returnDim[0], 75 / returnDim[0]);
+          }
+
+          if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) {
+            object.scale.set(75 / returnDim[1], 75 / returnDim[1], 75 / returnDim[1]);
+          }
+
+          if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) {
+            object.scale.set(75 / returnDim[2], 75 / returnDim[2], 75 / returnDim[2]);
+          }
+        }
+    });
+  scene.add(groupobj);
+
   renderer = new Three.WebGLRenderer({
     antialias: true
   });
@@ -1374,7 +1485,7 @@ function initPLY(text3d) {
   var loader = new Three.PLYLoader();
   var plybuffergeometry = loader.parse(text3d);
   var material = new Three.MeshStandardMaterial({
-    color: 0x0055ff,
+    color: 0x6c757d,
     flatShading: true
   });
   var mesh = new Three.Mesh(plybuffergeometry, material);
@@ -1392,6 +1503,20 @@ function initPLY(text3d) {
   returnVal = volume;
   var dim = calc_dimensions(geo);
   returnDim = dim;
+
+  mesh.position.set(0, 0, 0);
+  mesh.rotation.set(0, 0, 0);
+
+  if ((returnDim[0] > returnDim[1]) && (returnDim[0] > returnDim[2]))
+   { mesh.scale.set(50 / returnDim[0], 50 / returnDim[0], 50 / returnDim[0]); }
+
+ else  if ((returnDim[1] > returnDim[0]) && (returnDim[1] > returnDim[2])) 
+  { mesh.scale.set(50 / returnDim[1], 50 / returnDim[1], 50 / returnDim[1]); }
+
+  else if ((returnDim[2] > returnDim[0]) && (returnDim[2] > returnDim[1])) 
+  { mesh.scale.set(50 / returnDim[2], 50 / returnDim[2], 50 / returnDim[2]); }
+
+
   renderer = new Three.WebGLRenderer({
     antialias: true
   });
@@ -1606,7 +1731,7 @@ function parse_obj(s) {
 
   var face_pattern3 = /f( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))( +(-?\d+)\/(-?\d+)\/(-?\d+))?/;
 
-  // f vertex//normal vertex//normal vertex//normal ... 
+  // f vertex//normal vertex//normal vertex//normal ...
 
   var face_pattern4 = /f( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))( +(-?\d+)\/\/(-?\d+))?/
 
